@@ -13,6 +13,7 @@
     "@remirror/pm": "^3.0.0",
     "@remirror/react": "^3.0.1",
     "@remirror/react-hooks": "^3.0.1",
+    "jwt-decode": "^4.0.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-router-dom": "^6.26.1",

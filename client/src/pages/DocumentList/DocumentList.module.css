@@ -1,0 +1,32 @@
+.documentList {
+    max-width: 600px;
+    margin: 0 auto;
+  }
+  
+  .newButton {
+    padding: 10px 20px;
+    margin-bottom: 20px;
+    background-color: #282c34;
+    color: white;
+    border: none;
+    cursor: pointer;
+  }
+  
+  .newButton:hover {
+    background-color: #3a3f47;
+  }
+  
+  .list {
+    list-style: none;
+    padding: 0;
+  }
+  
+  .link {
+    color: #61dafb;
+    text-decoration: none;
+  }
+  
+  .link:hover {
+    text-decoration: underline;
+  }
+  
