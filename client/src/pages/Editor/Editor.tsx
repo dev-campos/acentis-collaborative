@@ -1,59 +1,33 @@
-import React, { useEffect, useRef, useState } from "react";
-import { useParams, Link } from "react-router-dom";
 import styles from "./Editor.module.css";
 
-const Editor: React.FC = () => {
-    const { id } = useParams<{ id: string }>();
-    const [content, setContent] = useState("");
-    const editorRef = useRef<HTMLTextAreaElement | null>(null);
+import Collaboration from "@tiptap/extension-collaboration";
+import { EditorContent, useEditor } from "@tiptap/react";
+import StarterKit from "@tiptap/starter-kit";
+import { WebsocketProvider } from "y-websocket";
+import * as Y from "yjs";
 
-    useEffect(() => {
-        // Placeholder for setting up the WebSocket connection to fetch document content
-        const setupWebSocket = () => {
-            console.log(`Setting up WebSocket for document ID: ${id}`);
-            // Placeholder for WebSocket connection setup
-            const ws = new WebSocket(`ws://localhost:5001/documents/${id}`);
-
-            ws.onmessage = (event) => {
-                const data = JSON.parse(event.data);
-                setContent(data.content);
-            };
-
-            return () => {
-                ws.close();
-                console.log("WebSocket connection closed");
-            };
-        };
-
-        const cleanupWebSocket = setupWebSocket();
-
-        return cleanupWebSocket;
-    }, [id]);
-
-    const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-        const newValue = e.target.value;
-        setContent(newValue);
-        // Placeholder for sending content updates via WebSocket
-        console.log("Content changed:", newValue);
-    };
-
-    return (
-        <div className={styles.editor}>
-            <h2>Editing Document: {id}</h2>
-            <textarea
-                ref={editorRef}
-                value={content}
-                onChange={handleInputChange}
-                className={styles.textarea}
-                placeholder="Start typing..."
-            />
-            <Link
-                to={`/documents/${id}/history`}
-                className={styles.historyLink}>
-                View Version History
-            </Link>
-        </div>
+const Editor = () => {
+    const ydoc = new Y.Doc();
+    new WebsocketProvider(
+        "ws://localhost:3000",
+        "tiptap-collaboration-room",
+        ydoc
     );
+
+    const editor = useEditor({
+        extensions: [
+            StarterKit.configure({
+                history: false,
+            }),
+            Collaboration.configure({
+                document: ydoc,
+            }),
+        ],
+        immediatelyRender: true,
+        shouldRerenderOnTransaction: false,
+    });
+
+    return <EditorContent className={styles.editor} editor={editor} />;
 };
 
 export default Editor;

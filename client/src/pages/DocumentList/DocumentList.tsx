@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import styles from "./DocumentList.module.css";
+import { v4 as uuidv4 } from "uuid";
 
 interface Document {
     id: string;
@@ -12,22 +13,11 @@ const DocumentList: React.FC = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        // Placeholder for setting up WebSocket connection to receive documents
-        const ws = new WebSocket("ws://localhost:5001/documents");
-
-        ws.onmessage = (event) => {
-            const data = JSON.parse(event.data);
-            setDocuments(data);
-        };
-
-        return () => {
-            ws.close();
-            console.log("WebSocket connection closed");
-        };
+        setDocuments([]);
     }, []);
 
     const handleNewDocument = () => {
-        const newDocumentId = "new-id"; // Simulate creating a new document
+        const newDocumentId = uuidv4(); // Simulate creating a new document
         navigate(`/documents/${newDocumentId}`);
     };
 

@@ -1,28 +1,108 @@
+/* Set the editor to be the size of an A4 paper */
 .editor {
-    max-width: 800px;
-    margin: 0 auto;
-    display: flex;
-    flex-direction: column;
-  }
-  
-  .textarea {
-    width: 100%;
-    height: 400px;
-    margin-top: 20px;
-    padding: 10px;
-    font-family: Arial, sans-serif;
-    font-size: 16px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-  }
-  
-  .historyLink {
-    margin-top: 20px;
-    color: #61dafb;
-    text-decoration: none;
-  }
-  
-  .historyLink:hover {
-    text-decoration: underline;
-  }
-  
+  margin: 20px auto; 
+  background-color: antiquewhite;
+  width: 21cm;
+  height: 29.7cm;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  padding: 1rem;
+  box-sizing: border-box;
+}
+
+
+.editor .tiptap.ProseMirror p{
+  overflow-y: auto;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  padding: 1rem;
+}
+
+/* List styles */
+.editor .content ul,
+.editor .content ol {
+  padding: 0 1rem;
+  margin: 1.25rem 1rem 1.25rem 0.4rem;
+}
+
+.editor .content ul li p,
+.editor .content ol li p {
+  margin-top: 0.25em;
+  margin-bottom: 0.25em;
+}
+
+/* Heading styles */
+.editor .content h1,
+.editor .content h2,
+.editor .content h3,
+.editor .content h4,
+.editor .content h5,
+.editor .content h6 {
+  line-height: 1.1;
+  margin-top: 2.5rem;
+}
+
+.editor .content h1,
+.editor .content h2 {
+  margin-top: 3.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.editor .content h1 {
+  font-size: 1.4rem;
+}
+
+.editor .content h2 {
+  font-size: 1.2rem;
+}
+
+.editor .content h3 {
+  font-size: 1.1rem;
+}
+
+.editor .content h4,
+.editor .content h5,
+.editor .content h6 {
+  font-size: 1rem;
+}
+
+/* Code and preformatted text styles */
+.editor .content code {
+  background-color: #e0bbff;
+  border-radius: 0.4rem;
+  color: #000000;
+  font-size: 0.85rem;
+  padding: 0.25em 0.3em;
+}
+
+.editor .content pre {
+  background: #000000;
+  border-radius: 0.5rem;
+  color: #ffffff;
+  font-family: 'JetBrainsMono', monospace;
+  margin: 1.5rem 0;
+  padding: 0.75rem 1rem;
+}
+
+.editor .content pre code {
+  background: none;
+  color: inherit;
+  font-size: 0.8rem;
+  padding: 0;
+}
+
+/* Blockquote styles */
+.editor .content blockquote {
+  border-left: 3px solid #cccccc;
+  margin: 1.5rem 0;
+  padding-left: 1rem;
+}
+
+/* Horizontal rule styles */
+.editor .content hr {
+  border: none;
+  border-top: 1px solid #999999;
+  margin: 2rem 0;
+}
