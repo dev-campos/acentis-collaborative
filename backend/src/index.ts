@@ -2,8 +2,11 @@ import express from 'express';
 import cors from 'cors';
 import mongoose from 'mongoose';
 import authRoutes from './routes/authRoutes';
+import documentRoutes from './routes/documentRoutes';
 import { setupSwagger } from './swagger';
 import dotenv from 'dotenv';
+import { createServer } from 'http';
+import { createHocuspocusServer } from './websocket/websocketServer';
 
 dotenv.config();
 
@@ -15,8 +18,6 @@ app.use(express.json());
 
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/myapp';
 
-
-// Connect to MongoDB
 mongoose.connect(MONGODB_URI)
     .then(() => console.log('MongoDB connected'))
     .catch(err => console.error('MongoDB connection error:', err));
@@ -26,10 +27,17 @@ mongoose.connection.once('open', () => {
 });
 
 app.use('/api/auth', authRoutes);
+app.use('/api', documentRoutes);
 
-// Setup Swagger
 setupSwagger(app);
 
-app.listen(PORT, () => {
+// Create the HTTP server
+const server = createServer(app);
+
+// Start the WebSocket server with Hocuspocus
+createHocuspocusServer(server);
+
+// Start the HTTP server
+server.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
 });

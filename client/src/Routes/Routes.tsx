@@ -3,10 +3,10 @@ import Home from "../pages/Home/Home";
 import Login from "../pages/Login/Login";
 import Register from "../pages/Register/Register";
 import DocumentList from "../pages/DocumentList/DocumentList";
-import Editor from "../pages/Editor/Editor";
 import VersionHistory from "../pages/VersionHistory/VersionHistory";
 import Layout from "../components/Layout/Layout";
 import ProtectedRoute from "../components/ProtectedRoute/ProtectedRoute";
+import ProviderManager from "../pages/ProviderManager/ProviderManager";
 
 const Routes = createBrowserRouter([
     {
@@ -28,7 +28,7 @@ const Routes = createBrowserRouter([
                 path: "documents/:id",
                 element: (
                     <ProtectedRoute>
-                        <Editor />
+                        <ProviderManager />
                     </ProtectedRoute>
                 ),
             },

@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { register, login, verifyToken } from '../controllers/authController';
+import { register, login } from '../controllers/authController';
 
 const router = Router();
 
@@ -81,24 +81,6 @@ router.post('/register', register);
  *         description: Invalid credentials
  */
 router.post('/login', login);
-
-/**
- * @swagger
- * /api/auth/protected:
- *   get:
- *     summary: Access a protected route
- *     tags: [Auth]
- *     security:
- *       - bearerAuth: []
- *     responses:
- *       200:
- *         description: Access granted
- *       401:
- *         description: Unauthorized
- */
-router.get('/protected', verifyToken, (req, res) => {
-    res.json({ message: 'This is a protected route' });
-});
 
 
 export default router;

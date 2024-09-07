@@ -13,28 +13,23 @@ const VersionHistory: React.FC = () => {
     const [versions, setVersions] = useState<Version[]>([]);
 
     useEffect(() => {
-        // Placeholder for fetching version history from the server
+        // Fetch version history from the backend
         const fetchVersionHistory = async () => {
-            console.log(
-                `Fetching version history for document ID: ${id} (placeholder)`
-            );
-            const fetchedVersions: Version[] = [
-                {
-                    timestamp: "2024-09-01T10:00:00Z",
-                    author: "User1",
-                    content: "Version 1 content",
-                },
-                {
-                    timestamp: "2024-09-02T12:00:00Z",
-                    author: "User2",
-                    content: "Version 2 content",
-                },
-            ];
-            setVersions(fetchedVersions);
+            const response = await fetch(`/api/document/${id}/versions`);
+            const data = await response.json();
+            setVersions(data);
         };
 
         fetchVersionHistory();
     }, [id]);
+
+    const handleRollback = async (versionIndex: number) => {
+        await fetch(`/api/document/rollback/${id}/${versionIndex}`, {
+            method: "POST",
+        });
+        // Optionally, refresh the version list after rollback
+        window.location.reload();
+    };
 
     return (
         <div className={styles.versionHistory}>
@@ -50,6 +45,9 @@ const VersionHistory: React.FC = () => {
                             {version.author}
                         </div>
                         <pre>{version.content}</pre>
+                        <button onClick={() => handleRollback(index)}>
+                            Rollback to this Version
+                        </button>
                     </li>
                 ))}
             </ul>
