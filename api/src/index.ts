@@ -4,9 +4,9 @@ import mongoose from 'mongoose';
 import authRoutes from './routes/authRoutes';
 import documentRoutes from './routes/documentRoutes';
 import { setupSwagger } from './swagger';
-import dotenv from 'dotenv';
 import { createServer } from 'http';
 import { createHocuspocusServer } from './websocket/websocketServer';
+import dotenv from 'dotenv';
 
 dotenv.config();
 
