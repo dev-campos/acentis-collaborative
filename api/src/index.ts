@@ -11,7 +11,6 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT || 5001;
 
 app.use(cors());
 app.use(express.json());
@@ -34,10 +33,12 @@ setupSwagger(app);
 // Create the HTTP server
 const server = createServer(app);
 
+
 // Start the WebSocket server with Hocuspocus
 createHocuspocusServer(server);
 
 // Start the HTTP server
-server.listen(PORT, () => {
+const PORT = parseInt(process.env.PORT || '5001', 10);
+server.listen(PORT, '0.0.0.0', () => {
     console.log(`Server running on port ${PORT}`);
 });

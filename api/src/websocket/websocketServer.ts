@@ -66,21 +66,27 @@ export const createHocuspocusServer = (httpServer: any) => {
     onAuthenticate: async (data) => {
       const token = data.token;
       if (!token) {
+        console.error('Unauthorized attempt');
         throw new Error('Unauthorized');
       }
       try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET as string) as JwtPayloadWithId;
         data.context.user = { id: decoded.id };
+        console.log(`User authenticated: ${decoded.id}`);
       } catch (err) {
+        console.error('JWT verification failed:', err);
         throw new Error('Forbidden');
       }
     },
     onConnect: async (data) => {
+      console.log(`User connected: ${data.context.user?.id}`);
       return Promise.resolve();
     },
     onDisconnect: async (data) => {
+      console.log(`User disconnected: ${data.context.user?.id}`);
       return Promise.resolve();
     },
+
   });
 
   hocuspocusServer.listen(httpServer);
