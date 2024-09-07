@@ -11,26 +11,51 @@ export const createHocuspocusServer = (httpServer: any) => {
   const hocuspocusServer = HocuspocusServer.configure({
     extensions: [
       new Database({
-        fetch: async ({ socketId }) => {
+        fetch: async ({ requestParameters }) => {
+          const roomId = requestParameters.get('roomId');
           try {
-            const document = await Document.findOne({ _id: socketId });
-            return document ? Buffer.from(document.content, 'binary') : null;
+            const document = await Document.findOne({ _id: roomId });
+            if (!document) {
+              return null;
+            }
+
+            if (Buffer.isBuffer(document.content) && document.content.length > 0) {
+              return new Uint8Array(document.content);
+            } else {
+              console.error('Document content buffer is empty or invalid:', document.content);
+              return null;
+            }
           } catch (error) {
             throw error;
           }
         },
-        store: async ({ state, context, socketId }) => {
-
+        store: async ({ state, context, requestParameters }) => {
+          const roomId = requestParameters.get('roomId');
           try {
-            const existingDocument = await Document.findOne({ _id: socketId });
+            let existingDocument = await Document.findOne({ _id: roomId });
 
-            if (existingDocument) {
-              existingDocument.content = Buffer.from(state).toString('binary');
-              existingDocument.versions.push({
-                content: Buffer.from(state).toString('binary'),
-                updatedBy: context.user?.id,
-              });
+            if (Buffer.isBuffer(state) && state.length > 0) {
+              if (existingDocument) {
+                existingDocument.content = state;
+                existingDocument.versions.push({
+                  content: state,
+                  updatedBy: context.user?.id,
+                });
+              } else {
+                existingDocument = new Document({
+                  _id: roomId,
+                  title: roomId,
+                  content: state,
+                  versions: [{
+                    content: state,
+                    updatedBy: context.user?.id,
+                  }],
+                  createdBy: context.user?.id,
+                });
+              }
               await existingDocument.save();
+            } else {
+              console.error('State buffer is empty or invalid:', state);
             }
           } catch (error) {
             throw error;
@@ -39,12 +64,10 @@ export const createHocuspocusServer = (httpServer: any) => {
       }),
     ],
     onAuthenticate: async (data) => {
-      const token = data.token
-
+      const token = data.token;
       if (!token) {
         throw new Error('Unauthorized');
       }
-
       try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET as string) as JwtPayloadWithId;
         data.context.user = { id: decoded.id };
@@ -53,14 +76,12 @@ export const createHocuspocusServer = (httpServer: any) => {
       }
     },
     onConnect: async (data) => {
-      console.log('Client connected', 'Authenticated user ID:', data.context.user?.id);
       return Promise.resolve();
     },
     onDisconnect: async (data) => {
-      console.log('Client disconnected');
       return Promise.resolve();
     },
   });
 
-  hocuspocusServer.listen(httpServer); // Attach Hocuspocus to the existing HTTP server
+  hocuspocusServer.listen(httpServer);
 };

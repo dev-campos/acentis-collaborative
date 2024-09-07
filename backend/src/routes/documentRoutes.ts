@@ -1,9 +1,7 @@
-
 import express, { Request, Response } from 'express';
 import { Document } from '../models/Document';
 import authenticateToken from '../middleware/authenticateToken';
 import { AuthenticatedRequest } from 'src/types/AuthenticatedRequest';
-
 
 const router = express.Router();
 
@@ -64,6 +62,19 @@ router.get('/documents', async (_, res) => {
  *     responses:
  *       201:
  *         description: Document created successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 _id:
+ *                   type: string
+ *                 title:
+ *                   type: string
+ *                 content:
+ *                   type: string
+ *                 createdBy:
+ *                   type: string
  *       500:
  *         description: Error creating document
  */
@@ -71,12 +82,11 @@ router.post('/documents', authenticateToken, async (req: AuthenticatedRequest, r
   const { id, title } = req.body;
   const userId = req.user?.id;
 
-
   try {
     const newDocument = new Document({
       _id: id,
       title,
-      content: '',
+      content: Buffer.from(''),
       versions: [],
       createdBy: userId
     });
@@ -150,6 +160,15 @@ router.delete('/documents/:id', authenticateToken, async (req: AuthenticatedRequ
  *     responses:
  *       200:
  *         description: Document rolled back successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                 content:
+ *                   type: string
  *       404:
  *         description: Version not found
  *       500:
@@ -163,10 +182,10 @@ router.post('/rollback/:documentId/:versionIndex', async (req, res) => {
 
     if (document && document.versions[Number(versionIndex)]) {
       const previousVersion = document.versions[Number(versionIndex)];
-      document.content = previousVersion.content;
+      document.content = Buffer.from(previousVersion.content);
 
       document.versions.push({
-        content: previousVersion.content,
+        content: Buffer.from(previousVersion.content),
         updatedBy: `rollback_to_${versionIndex}`,
       });
 
@@ -180,6 +199,5 @@ router.post('/rollback/:documentId/:versionIndex', async (req, res) => {
     return res.status(500).json({ message: 'Error rolling back document', error });
   }
 });
-
 
 export default router;

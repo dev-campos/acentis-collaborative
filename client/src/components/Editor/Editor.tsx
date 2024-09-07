@@ -19,7 +19,7 @@ const Editor: React.FC<EditorProps> = ({ provider }) => {
                 document: provider.document,
             }),
         ],
-        content: provider.document,
+        editable: true,
         immediatelyRender: true,
         shouldRerenderOnTransaction: false,
         editorProps: {
@@ -32,13 +32,7 @@ const Editor: React.FC<EditorProps> = ({ provider }) => {
         onUpdate: () => console.log("Editor updated"),
     });
 
-    return (
-        <EditorContent
-            className={styles.editor}
-            editor={editor}
-            placeholder="Go ahead collab"
-        />
-    );
+    return <EditorContent className={styles.editor} editor={editor} />;
 };
 
 export default Editor;

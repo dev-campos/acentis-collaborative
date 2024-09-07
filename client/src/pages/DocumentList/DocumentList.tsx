@@ -52,8 +52,6 @@ const DocumentList: React.FC = () => {
         const getDocuments = async () => {
             try {
                 const data = await fetchDocuments();
-                console.log(data);
-
                 setDocuments(data);
             } catch (error) {
                 console.error("Error fetching documents:", error);
