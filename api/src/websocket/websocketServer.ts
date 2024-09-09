@@ -4,6 +4,12 @@ import { Document } from '../models/Document';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import { Server } from "http";
 import { WebSocketServer } from 'ws';
+import validator from 'validator';
+import DOMPurify from 'dompurify';
+import { JSDOM } from 'jsdom';
+
+const window = new JSDOM('').window;
+const purify = DOMPurify(window);
 
 interface JwtPayloadWithId extends JwtPayload {
   id: string;
@@ -15,6 +21,11 @@ export const createHocuspocusServer = (httpServer: Server) => {
       new Database({
         fetch: async ({ requestParameters }) => {
           const roomId = requestParameters.get('roomId');
+
+          if (!roomId || !validator.isUUID(roomId)) {
+            throw new Error('Invalid room ID');
+          }
+
           try {
             const document = await Document.findOne({ _id: roomId });
             if (!document) {
@@ -22,9 +33,13 @@ export const createHocuspocusServer = (httpServer: Server) => {
             }
 
             if (Buffer.isBuffer(document.content) && document.content.length > 0) {
-              return new Uint8Array(document.content);
+              const contentBase64 = document.content.toString('base64');
+              const contentString = Buffer.from(contentBase64, 'base64').toString('utf-8');
+              const sanitizedContentString = purify.sanitize(contentString);
+              const sanitizedContentBase64 = Buffer.from(sanitizedContentString, 'utf-8').toString('base64');
+
+              return new Uint8Array(Buffer.from(sanitizedContentBase64, 'base64'));
             } else {
-              console.error('Document content buffer is empty or invalid:', document.content);
               return null;
             }
           } catch (error) {
@@ -33,23 +48,38 @@ export const createHocuspocusServer = (httpServer: Server) => {
         },
         store: async ({ state, context, requestParameters }) => {
           const roomId = requestParameters.get('roomId');
+
+          if (!roomId || !validator.isUUID(roomId)) {
+            throw new Error('Invalid room ID');
+          }
+
           try {
+            let sanitizedState = state;
+
+            if (Buffer.isBuffer(state)) {
+              const stateBase64 = state.toString('base64');
+              const stateString = Buffer.from(stateBase64, 'base64').toString('utf-8');
+              const sanitizedString = purify.sanitize(stateString);
+              const sanitizedBase64 = Buffer.from(sanitizedString, 'utf-8').toString('base64');
+              sanitizedState = Buffer.from(sanitizedBase64, 'base64');
+            }
+
             let existingDocument = await Document.findOne({ _id: roomId });
 
-            if (Buffer.isBuffer(state) && state.length > 0) {
+            if (Buffer.isBuffer(sanitizedState) && sanitizedState.length > 0) {
               if (existingDocument) {
-                existingDocument.content = state;
+                existingDocument.content = sanitizedState;
                 existingDocument.versions.push({
-                  content: state,
+                  content: sanitizedState,
                   updatedBy: context.user?.id,
                 });
               } else {
                 existingDocument = new Document({
                   _id: roomId,
                   title: roomId,
-                  content: state,
+                  content: sanitizedState,
                   versions: [{
-                    content: state,
+                    content: sanitizedState,
                     updatedBy: context.user?.id,
                   }],
                   createdBy: context.user?.id,
@@ -57,7 +87,7 @@ export const createHocuspocusServer = (httpServer: Server) => {
               }
               await existingDocument.save();
             } else {
-              console.error('State buffer is empty or invalid:', state);
+              return;
             }
           } catch (error) {
             throw error;
@@ -68,24 +98,19 @@ export const createHocuspocusServer = (httpServer: Server) => {
     onAuthenticate: async (data) => {
       const token = data.token;
       if (!token) {
-        console.error('Unauthorized attempt');
         throw new Error('Unauthorized');
       }
       try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET as string) as JwtPayloadWithId;
         data.context.user = { id: decoded.id };
-        console.log(`User authenticated: ${decoded.id}`);
       } catch (err) {
-        console.error('JWT verification failed:', err);
         throw new Error('Forbidden');
       }
     },
     onConnect: async (data) => {
-      console.log(`User connected: ${data.context.user?.id}`);
       return Promise.resolve();
     },
     onDisconnect: async (data) => {
-      console.log(`User disconnected: ${data.context.user?.id}`);
       return Promise.resolve();
     },
   });

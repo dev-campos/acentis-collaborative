@@ -2,6 +2,7 @@ import express, { Request, Response } from 'express';
 import { Document } from '../models/Document';
 import authenticateToken from '../middleware/authenticateToken';
 import { AuthenticatedRequest } from 'src/types/AuthenticatedRequest';
+import validator from 'validator';
 
 const router = express.Router();
 
@@ -79,13 +80,21 @@ router.get('/documents', async (_, res) => {
  *         description: Error creating document
  */
 router.post('/documents', authenticateToken, async (req: AuthenticatedRequest, res: Response) => {
-  const { id, title } = req.body;
+  let { id, title } = req.body;
   const userId = req.user?.id;
 
   try {
+    if (!validator.isUUID(id)) {
+      return res.status(400).json({ message: 'Invalid document ID format' });
+    }
+
+    if (!validator.isLength(title, { min: 1 })) {
+      return res.status(400).json({ message: 'Title cannot be empty' });
+    }
+
     const newDocument = new Document({
       _id: id,
-      title,
+      title: validator.escape(title),
       content: Buffer.from(''),
       versions: [],
       createdBy: userId
@@ -125,6 +134,10 @@ router.delete('/documents/:id', authenticateToken, async (req: AuthenticatedRequ
   const documentId = req.params.id;
   const userId = req.user?.id;
 
+  if (!validator.isUUID(documentId)) {
+    return res.status(400).json({ message: 'Invalid document ID format' });
+  }
+
   try {
     const document = await Document.findById(documentId);
     if (!document) {
@@ -142,7 +155,7 @@ router.delete('/documents/:id', authenticateToken, async (req: AuthenticatedRequ
 
 /**
  * @swagger
- * /rollback/{documentId}/{versionIndex}:
+ * /rollback/{documentId}/{versionId}:
  *   post:
  *     summary: Rollback document to a previous version
  *     tags: [Documents]
@@ -152,11 +165,11 @@ router.delete('/documents/:id', authenticateToken, async (req: AuthenticatedRequ
  *         required: true
  *         schema:
  *           type: string
- *       - name: versionIndex
+ *       - name: versionId
  *         in: path
  *         required: true
  *         schema:
- *           type: integer
+ *           type: string
  *     responses:
  *       200:
  *         description: Document rolled back successfully
@@ -174,19 +187,32 @@ router.delete('/documents/:id', authenticateToken, async (req: AuthenticatedRequ
  *       500:
  *         description: Error rolling back document
  */
-router.post('/rollback/:documentId/:versionIndex', async (req, res) => {
-  const { documentId, versionIndex } = req.params;
+router.post('/rollback/:documentId/:versionId', async (req, res) => {
+  const { documentId, versionId } = req.params;
+
+  if (!validator.isUUID(documentId)) {
+    return res.status(400).json({ message: 'Invalid document ID format' });
+  }
+
+  if (!validator.isMongoId(versionId)) {
+    return res.status(400).json({ message: 'Invalid version ID format' });
+  }
 
   try {
     const document = await Document.findById(documentId);
 
-    if (document && document.versions[Number(versionIndex)]) {
-      const previousVersion = document.versions[Number(versionIndex)];
+    if (document) {
+      const previousVersion = document.versions.find(version => version._id.toString() === versionId);
+
+      if (!previousVersion) {
+        return res.status(404).json({ message: 'Version not found' });
+      }
+
       document.content = Buffer.from(previousVersion.content);
 
       document.versions.push({
         content: Buffer.from(previousVersion.content),
-        updatedBy: `rollback_to_${versionIndex}`,
+        updatedBy: `rollback_to_${versionId}`,
       });
 
       await document.save();
@@ -194,7 +220,7 @@ router.post('/rollback/:documentId/:versionIndex', async (req, res) => {
       return res.status(200).json({ message: 'Document rolled back', content: document.content });
     }
 
-    return res.status(404).json({ message: 'Version not found' });
+    return res.status(404).json({ message: 'Document not found' });
   } catch (error) {
     return res.status(500).json({ message: 'Error rolling back document', error });
   }

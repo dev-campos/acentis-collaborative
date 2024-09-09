@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
+import validator from 'validator';
 import User from '../models/User';
 import dotenv from 'dotenv';
 
@@ -8,11 +9,19 @@ dotenv.config();
 
 const SECRET_KEY = process.env.JWT_SECRET || '52EfU6n#vVLxhIq5';
 
-// Register a new user
 export const register = async (req: Request, res: Response) => {
-    const { email, password } = req.body;
+    let { email, password } = req.body;
 
     try {
+        email = validator.normalizeEmail(email);
+        if (!validator.isEmail(email)) {
+            return res.status(400).json({ message: 'Invalid email format' });
+        }
+
+        if (!validator.isLength(password, { min: 8 })) {
+            return res.status(400).json({ message: 'Password must be at least 8 characters long' });
+        }
+
         const existingUser = await User.findOne({ email });
         if (existingUser) {
             return res.status(400).json({ message: 'User already exists' });
@@ -29,13 +38,20 @@ export const register = async (req: Request, res: Response) => {
     }
 };
 
-// Login an existing user
 export const login = async (req: Request, res: Response) => {
-    const { email, password } = req.body;
+    let { email, password } = req.body;
 
     try {
-        const user = await User.findOne({ email });
+        email = validator.normalizeEmail(email);
+        if (!validator.isEmail(email)) {
+            return res.status(400).json({ message: 'Invalid email format' });
+        }
 
+        if (!validator.isLength(password, { min: 8 })) {
+            return res.status(400).json({ message: 'Password must be at least 8 characters long' });
+        }
+
+        const user = await User.findOne({ email });
         if (!user) {
             return res.status(400).json({ message: 'Invalid credentials' });
         }

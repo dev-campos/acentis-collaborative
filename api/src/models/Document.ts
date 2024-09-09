@@ -1,7 +1,7 @@
 import mongoose, { Schema } from "mongoose";
 
 const VersionSchema = new Schema({
-  _id: { type: Schema.Types.ObjectId, auto: true },
+  _id: { type: Schema.Types.ObjectId, required: true, auto: true },
   content: { type: Buffer, required: true },
   updatedBy: { type: String, required: true },
   createdAt: { type: Date, default: Date.now }
