@@ -27,7 +27,7 @@ export const createNewDocument = async (id: string, title: string, token: string
 
 // Delete a document with token-based verification
 export const deleteDocument = async (documentId: string, token: string) => {
-    const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/documents/${documentId}`, {
+    const response = await fetch(`${import.meta.env.VITE_BASE_URL}/api/documents/${documentId}`, {
         method: "DELETE",
         headers: {
             Authorization: `Bearer ${token}`  // Pass the token for authorization
