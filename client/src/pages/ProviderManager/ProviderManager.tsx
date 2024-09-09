@@ -4,7 +4,7 @@ import { useAuth } from "../../context/AuthContext";
 import { useParams, Link } from "react-router-dom";
 import Editor from "../../components/EditorComponent/EditorComponent";
 import validator from "validator";
-import styles from "./ProviderManager.module.css"; // Import the styles
+import styles from "./ProviderManager.module.css";
 
 const ProviderManager: React.FC = () => {
     const { id } = useParams<{ id: string }>();
