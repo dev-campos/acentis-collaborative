@@ -16,7 +16,7 @@ const ProviderManager: React.FC = () => {
 
         const newProvider = new HocuspocusProvider({
             token,
-            url: `ws://localhost:80/?roomId=${encodedRoomId}`,
+            url: `${import.meta.env.VITE_BASE_WS_URL}/?roomId=${encodedRoomId}`,
             name: encodedRoomId,
             onOpen: () => console.log("Connection opened to WebSocket server"),
             onClose: () => console.log("Connection closed"),

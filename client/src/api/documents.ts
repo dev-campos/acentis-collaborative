@@ -1,6 +1,6 @@
 // Get documents
 export const fetchDocuments = async () => {
-    const response = await fetch("http://localhost:5001/api/documents");
+    const response = await fetch(`${import.meta.env.VITE_BASE_URL}/api/documents`);
     if (!response.ok) {
         throw new Error(`HTTP error: ${response.status}`);
     }
@@ -9,7 +9,7 @@ export const fetchDocuments = async () => {
 
 // Create a new document with token-based verification
 export const createNewDocument = async (id: string, title: string, token: string) => {
-    const response = await fetch("http://localhost:5001/api/documents", {
+    const response = await fetch(`${import.meta.env.VITE_BASE_URL}/api/documents`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
@@ -27,7 +27,7 @@ export const createNewDocument = async (id: string, title: string, token: string
 
 // Delete a document with token-based verification
 export const deleteDocument = async (documentId: string, token: string) => {
-    const response = await fetch(`http://localhost:5001/api/documents/${documentId}`, {
+    const response = await fetch(`${import.meta.env.VITE_BASE_URL}api/documents/${documentId}`, {
         method: "DELETE",
         headers: {
             Authorization: `Bearer ${token}`  // Pass the token for authorization
