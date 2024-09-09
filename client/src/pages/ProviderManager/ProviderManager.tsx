@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { HocuspocusProvider } from "@hocuspocus/provider";
 import { useAuth } from "../../context/AuthContext";
-import { useParams } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import Editor from "../../components/EditorComponent/EditorComponent";
 import validator from "validator";
+import styles from "./ProviderManager.module.css"; // Import the styles
 
 const ProviderManager: React.FC = () => {
     const { id } = useParams<{ id: string }>();
@@ -41,7 +42,16 @@ const ProviderManager: React.FC = () => {
         };
     }, [id, token]);
 
-    return provider ? <Editor provider={provider} /> : <div>Loading...</div>;
+    return (
+        <div className={styles.providerManager}>
+            <div className={styles.versionLink}>
+                <Link to={`/documents/${id}/history`}>
+                    View Version History
+                </Link>
+            </div>
+            {provider ? <Editor provider={provider} /> : <div>Loading...</div>}
+        </div>
+    );
 };
 
 export default ProviderManager;

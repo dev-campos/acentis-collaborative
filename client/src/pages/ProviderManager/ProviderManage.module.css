@@ -1,0 +1,20 @@
+.providerManager {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.versionLink {
+    margin-bottom: 20px;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.versionLink a {
+    color: #007bff;
+    text-decoration: none;
+}
+
+.versionLink a:hover {
+    text-decoration: underline;
+}

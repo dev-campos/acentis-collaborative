@@ -1,8 +1,12 @@
-import express, { Request, Response } from 'express';
-import { Document } from '../models/Document';
+import express from 'express';
 import authenticateToken from '../middleware/authenticateToken';
-import { AuthenticatedRequest } from 'src/types/AuthenticatedRequest';
-import validator from 'validator';
+import {
+  getDocuments,
+  createDocument,
+  deleteDocument,
+  getDocumentVersions,
+  rollbackDocument,
+} from '../controllers/documentsController';
 
 const router = express.Router();
 
@@ -29,17 +33,7 @@ const router = express.Router();
  *       500:
  *         description: Error fetching documents
  */
-router.get('/documents', async (_, res) => {
-  try {
-    const documents = await Document.find();
-    if (!documents.length) {
-      return res.status(200).json([]);
-    }
-    return res.status(200).json(documents);
-  } catch (error) {
-    return res.status(500).json({ message: 'Error fetching documents', error });
-  }
-});
+router.get('/documents', getDocuments);
 
 /**
  * @swagger
@@ -79,32 +73,7 @@ router.get('/documents', async (_, res) => {
  *       500:
  *         description: Error creating document
  */
-router.post('/documents', authenticateToken, async (req: AuthenticatedRequest, res: Response) => {
-  let { id, title } = req.body;
-  const userId = req.user?.id;
-
-  try {
-    if (!validator.isUUID(id)) {
-      return res.status(400).json({ message: 'Invalid document ID format' });
-    }
-
-    if (!validator.isLength(title, { min: 1 })) {
-      return res.status(400).json({ message: 'Title cannot be empty' });
-    }
-
-    const newDocument = new Document({
-      _id: id,
-      title: validator.escape(title),
-      content: Buffer.from(''),
-      versions: [],
-      createdBy: userId
-    });
-    await newDocument.save();
-    return res.status(201).json(newDocument);
-  } catch (error) {
-    return res.status(500).json({ message: 'Error creating document', error });
-  }
-});
+router.post('/documents', authenticateToken, createDocument);
 
 /**
  * @swagger
@@ -130,28 +99,43 @@ router.post('/documents', authenticateToken, async (req: AuthenticatedRequest, r
  *       500:
  *         description: Error deleting document
  */
-router.delete('/documents/:id', authenticateToken, async (req: AuthenticatedRequest, res: Response) => {
-  const documentId = req.params.id;
-  const userId = req.user?.id;
+router.delete('/documents/:id', authenticateToken, deleteDocument);
 
-  if (!validator.isUUID(documentId)) {
-    return res.status(400).json({ message: 'Invalid document ID format' });
-  }
-
-  try {
-    const document = await Document.findById(documentId);
-    if (!document) {
-      return res.status(404).json({ message: 'Document not found' });
-    }
-    if (document.createdBy.toString() !== userId) {
-      return res.status(403).json({ message: 'You do not have permission to delete this document' });
-    }
-    await Document.findByIdAndDelete(documentId);
-    return res.status(200).json({ message: 'Document deleted successfully' });
-  } catch (error) {
-    return res.status(500).json({ message: 'Error deleting document', error });
-  }
-});
+/**
+ * @swagger
+ * /documents/{documentId}/versions:
+ *   get:
+ *     summary: Fetch version history of a document
+ *     tags: [Documents]
+ *     parameters:
+ *       - name: documentId
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: A list of document versions
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   content:
+ *                     type: string
+ *                   updatedBy:
+ *                     type: string
+ *                   updatedAt:
+ *                     type: string
+ *                     format: date-time
+ *       404:
+ *         description: Document not found
+ *       500:
+ *         description: Error fetching version history
+ */
+router.get('/documents/:documentId/versions', getDocumentVersions);
 
 /**
  * @swagger
@@ -187,43 +171,6 @@ router.delete('/documents/:id', authenticateToken, async (req: AuthenticatedRequ
  *       500:
  *         description: Error rolling back document
  */
-router.post('/rollback/:documentId/:versionId', async (req, res) => {
-  const { documentId, versionId } = req.params;
-
-  if (!validator.isUUID(documentId)) {
-    return res.status(400).json({ message: 'Invalid document ID format' });
-  }
-
-  if (!validator.isMongoId(versionId)) {
-    return res.status(400).json({ message: 'Invalid version ID format' });
-  }
-
-  try {
-    const document = await Document.findById(documentId);
-
-    if (document) {
-      const previousVersion = document.versions.find(version => version._id.toString() === versionId);
-
-      if (!previousVersion) {
-        return res.status(404).json({ message: 'Version not found' });
-      }
-
-      document.content = Buffer.from(previousVersion.content);
-
-      document.versions.push({
-        content: Buffer.from(previousVersion.content),
-        updatedBy: `rollback_to_${versionId}`,
-      });
-
-      await document.save();
-
-      return res.status(200).json({ message: 'Document rolled back', content: document.content });
-    }
-
-    return res.status(404).json({ message: 'Document not found' });
-  } catch (error) {
-    return res.status(500).json({ message: 'Error rolling back document', error });
-  }
-});
+router.post('/rollback/:documentId/:versionId', authenticateToken, rollbackDocument);
 
 export default router;

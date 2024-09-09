@@ -33,6 +33,7 @@ interface Document {
 
 const DocumentList: React.FC = () => {
     const [documents, setDocuments] = useState<Document[]>([]);
+    const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
     const { token } = useAuth();
 
@@ -50,11 +51,14 @@ const DocumentList: React.FC = () => {
 
     useEffect(() => {
         const getDocuments = async () => {
+            setLoading(true);
             try {
                 const data = await fetchDocuments();
                 setDocuments(data);
             } catch (error) {
                 console.error("Error fetching documents:", error);
+            } finally {
+                setLoading(false);
             }
         };
 
@@ -63,6 +67,7 @@ const DocumentList: React.FC = () => {
 
     const handleNewDocument = async () => {
         if (token) {
+            setLoading(true);
             try {
                 const id = v4();
                 const newDocument: Document = await createNewDocument(
@@ -75,6 +80,8 @@ const DocumentList: React.FC = () => {
                 navigate(`/documents/${newDocument._id}`);
             } catch (error) {
                 alert(`Failed to create document: ${error}`);
+            } finally {
+                setLoading(false);
             }
         } else {
             alert("You need to be authenticated to create a document.");
@@ -83,6 +90,7 @@ const DocumentList: React.FC = () => {
 
     const handleDeleteDocument = async (documentId: string) => {
         if (token) {
+            setLoading(true);
             try {
                 await deleteDocument(documentId, token);
                 setDocuments((prevDocs) =>
@@ -91,6 +99,8 @@ const DocumentList: React.FC = () => {
                 alert("Document deleted successfully.");
             } catch (error) {
                 alert(`Failed to delete document: ${error}`);
+            } finally {
+                setLoading(false);
             }
         } else {
             alert("You need to be authenticated to delete a document.");
@@ -100,27 +110,37 @@ const DocumentList: React.FC = () => {
     return (
         <div className={styles.documentList}>
             <h2>Your Documents</h2>
-            <button onClick={handleNewDocument} className={styles.newButton}>
-                Start New Document
+            <button
+                onClick={handleNewDocument}
+                className={styles.newButton}
+                disabled={loading}>
+                {loading ? "Loading..." : "Start New Document"}
             </button>
-            <ul className={styles.list}>
-                {documents.map((doc) => (
-                    <li key={doc._id} className={styles.listItem}>
-                        <Link
-                            to={`/documents/${doc._id}`}
-                            className={styles.link}>
-                            {doc.title}
-                        </Link>
-                        {doc.createdBy === userId && (
-                            <button
-                                className={styles.deleteButton}
-                                onClick={() => handleDeleteDocument(doc._id)}>
-                                Delete
-                            </button>
-                        )}
-                    </li>
-                ))}
-            </ul>
+            {loading ? (
+                <p>Loading documents...</p>
+            ) : (
+                <ul className={styles.list}>
+                    {documents.map((doc) => (
+                        <li key={doc._id} className={styles.listItem}>
+                            <Link
+                                to={`/documents/${doc._id}`}
+                                className={styles.link}>
+                                {doc.title}
+                            </Link>
+                            {doc.createdBy === userId && (
+                                <button
+                                    className={styles.deleteButton}
+                                    onClick={() =>
+                                        handleDeleteDocument(doc._id)
+                                    }
+                                    disabled={loading}>
+                                    Delete
+                                </button>
+                            )}
+                        </li>
+                    ))}
+                </ul>
+            )}
         </div>
     );
 };
