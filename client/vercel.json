@@ -1,3 +1,3 @@
 {
-    "buildCommand": "npm run build && ls -R src/routes"
+    "buildCommand": "ls -R src/routes && npm run build"
 }
