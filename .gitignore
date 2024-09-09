@@ -26,4 +26,4 @@ dist-ssr
 
 # Secrets
 client/.env
-backend/.env
+api/.env

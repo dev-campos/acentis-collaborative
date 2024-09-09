@@ -2,12 +2,14 @@ import { Server as HocuspocusServer } from "@hocuspocus/server";
 import { Database } from '@hocuspocus/extension-database';
 import { Document } from '../models/Document';
 import jwt, { JwtPayload } from 'jsonwebtoken';
+import { Server } from "http";
+import { WebSocketServer } from 'ws';
 
 interface JwtPayloadWithId extends JwtPayload {
   id: string;
 }
 
-export const createHocuspocusServer = (httpServer: any) => {
+export const createHocuspocusServer = (httpServer: Server) => {
   const hocuspocusServer = HocuspocusServer.configure({
     extensions: [
       new Database({
@@ -86,8 +88,10 @@ export const createHocuspocusServer = (httpServer: any) => {
       console.log(`User disconnected: ${data.context.user?.id}`);
       return Promise.resolve();
     },
-
   });
 
-  hocuspocusServer.listen(httpServer);
+  const wss = new WebSocketServer({ server: httpServer });
+  wss.on('connection', (ws, req) => {
+    hocuspocusServer.handleConnection(ws, req);
+  });
 };
