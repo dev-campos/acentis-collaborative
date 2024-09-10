@@ -17,7 +17,7 @@ const Login: React.FC = () => {
         setError("");
         try {
             const data = await loginUser(email, password);
-            login(data.token);
+            login(data.token, data.id, email);
             navigate("/documents");
         } catch (error) {
             setError((error as Error).message);

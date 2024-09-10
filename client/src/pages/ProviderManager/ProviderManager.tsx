@@ -1,21 +1,22 @@
 import React, { useEffect, useState } from "react";
 import { HocuspocusProvider } from "@hocuspocus/provider";
 import { useAuth } from "../../context/AuthContext";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import Editor from "../../components/EditorComponent/EditorComponent";
 import validator from "validator";
 import styles from "./ProviderManager.module.css";
 
 const ProviderManager: React.FC = () => {
     const { id } = useParams<{ id: string }>();
-    const { token } = useAuth();
+    const { token, logout } = useAuth();
     const [provider, setProvider] = useState<HocuspocusProvider | null>(null);
+    const navigate = useNavigate();
 
     useEffect(() => {
         if (!id || !token) return;
 
         const sanitizedId = encodeURIComponent(id);
-        if (!validator.isUUID(id)) {
+        if (!validator.isMongoId(id)) {
             console.error("Invalid room ID");
             return;
         }
@@ -30,8 +31,24 @@ const ProviderManager: React.FC = () => {
             url: `${import.meta.env.VITE_BASE_WS_URL}/?roomId=${sanitizedId}`,
             name: sanitizedId,
             onOpen: () => console.log("Connection opened to WebSocket server"),
-            onClose: () => console.log("Connection closed"),
+            onClose: (data) => {
+                console.log("Connection closed", event);
+
+                // Check if the WebSocket was closed due to authentication issues
+                if (
+                    data.event.code === 4001 ||
+                    data.event.reason === "Unauthorized" ||
+                    data.event.reason === "Forbidden"
+                ) {
+                    console.error("Authentication failed, logging out");
+                    logout();
+                    navigate("/");
+                }
+            },
             onSynced: (isSynced) => console.log("Document synced:", isSynced),
+            onAuthenticated: () => {
+                console.log("Authenticated successfully");
+            },
         });
 
         setProvider(newProvider);

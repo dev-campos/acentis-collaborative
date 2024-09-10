@@ -3,6 +3,27 @@ import { Document } from '../models/Document';
 import { AuthenticatedRequest } from 'src/types/AuthenticatedRequest';
 import validator from 'validator';
 
+export const getDocument = async (req: Request, res: Response) => {
+    const documentId = req.params.documentId;
+
+    if (!validator.isMongoId(documentId)) {
+        return res.status(400).json({ message: 'Invalid document ID format' });
+    }
+
+    try {
+        const document = await Document.findById(documentId);
+
+        if (!document) {
+            return res.status(404).json({ message: 'Document not found' });
+        }
+
+        return res.status(200).json(document);
+    } catch (error) {
+        return res.status(500).json({ message: 'Error fetching document', error });
+    }
+};
+
+
 export const getDocuments = async (req: Request, res: Response) => {
     try {
         const documents = await Document.find();
@@ -16,21 +37,11 @@ export const getDocuments = async (req: Request, res: Response) => {
 };
 
 export const createDocument = async (req: AuthenticatedRequest, res: Response) => {
-    const { id, title } = req.body;
     const userId = req.user?.id;
-
-    if (!validator.isUUID(id)) {
-        return res.status(400).json({ message: 'Invalid document ID format' });
-    }
-
-    if (!validator.isLength(title, { min: 1 })) {
-        return res.status(400).json({ message: 'Title cannot be empty' });
-    }
 
     try {
         const newDocument = new Document({
-            _id: id,
-            title: validator.escape(title),
+            title: 'No title set',
             content: Buffer.from(''),
             versions: [],
             createdBy: userId,
@@ -38,6 +49,7 @@ export const createDocument = async (req: AuthenticatedRequest, res: Response) =
         await newDocument.save();
         return res.status(201).json(newDocument);
     } catch (error) {
+        console.error('Error creating document:', error);
         return res.status(500).json({ message: 'Error creating document', error });
     }
 };
@@ -46,7 +58,7 @@ export const deleteDocument = async (req: AuthenticatedRequest, res: Response) =
     const documentId = req.params.id;
     const userId = req.user?.id;
 
-    if (!validator.isUUID(documentId)) {
+    if (!validator.isMongoId(documentId)) {
         return res.status(400).json({ message: 'Invalid document ID format' });
     }
 
@@ -68,7 +80,7 @@ export const deleteDocument = async (req: AuthenticatedRequest, res: Response) =
 export const getDocumentVersions = async (req: Request, res: Response) => {
     const { documentId } = req.params;
 
-    if (!validator.isUUID(documentId)) {
+    if (!validator.isMongoId(documentId)) {
         return res.status(400).json({ message: 'Invalid document ID format' });
     }
 
@@ -87,7 +99,7 @@ export const rollbackDocument = async (req: AuthenticatedRequest, res: Response)
     const { documentId, versionId } = req.params;
     const userId = req.user?.id;
 
-    if (!validator.isUUID(documentId)) {
+    if (!validator.isMongoId(documentId)) {
         return res.status(400).json({ message: 'Invalid document ID format' });
     }
 

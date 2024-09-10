@@ -6,9 +6,34 @@ import {
   deleteDocument,
   getDocumentVersions,
   rollbackDocument,
+  getDocument,
 } from '../controllers/documentsController';
 
 const router = express.Router();
+
+/**
+ * @swagger
+ * /documents/{documentId}:
+ *   get:
+ *     summary: Fetch a single document by ID
+ *     tags: [Documents]
+ *     parameters:
+ *       - name: documentId
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Returns the requested document
+ *       400:
+ *         description: Invalid document ID format
+ *       404:
+ *         description: Document not found
+ *       500:
+ *         description: Error fetching document
+ */
+router.get('/documents/:documentId', getDocument);
 
 /**
  * @swagger

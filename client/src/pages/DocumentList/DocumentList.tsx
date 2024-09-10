@@ -8,7 +8,6 @@ import {
     deleteDocument,
 } from "../../api/documents";
 import { JwtPayload, jwtDecode } from "jwt-decode";
-import { v4 } from "uuid";
 
 interface JwtPayloadWithId extends JwtPayload {
     id: string;
@@ -69,12 +68,7 @@ const DocumentList: React.FC = () => {
         if (token) {
             setLoading(true);
             try {
-                const id = v4();
-                const newDocument: Document = await createNewDocument(
-                    id,
-                    id,
-                    token
-                );
+                const newDocument: Document = await createNewDocument(token);
 
                 setDocuments((prevDocs) => [...prevDocs, newDocument]);
                 navigate(`/documents/${newDocument._id}`);

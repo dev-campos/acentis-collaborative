@@ -1,15 +1,12 @@
 import { Server as HocuspocusServer } from "@hocuspocus/server";
+import { Throttle } from "@hocuspocus/extension-throttle";
 import { Database } from '@hocuspocus/extension-database';
 import { Document } from '../models/Document';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import { Server } from "http";
 import { WebSocketServer } from 'ws';
 import validator from 'validator';
-import DOMPurify from 'dompurify';
-import { JSDOM } from 'jsdom';
-
-const window = new JSDOM('').window;
-const purify = DOMPurify(window);
+import { fromUint8Array } from 'js-base64';
 
 interface JwtPayloadWithId extends JwtPayload {
   id: string;
@@ -18,13 +15,11 @@ interface JwtPayloadWithId extends JwtPayload {
 export const createHocuspocusServer = (httpServer: Server) => {
   const hocuspocusServer = HocuspocusServer.configure({
     extensions: [
+      new Throttle({ throttle: 15, banTime: 5 }),
       new Database({
         fetch: async ({ requestParameters }) => {
           const roomId = requestParameters.get('roomId');
-
-          if (!roomId || !validator.isUUID(roomId)) {
-            throw new Error('Invalid room ID');
-          }
+          if (!roomId || !validator.isMongoId(roomId)) throw new Error('Invalid room ID');
 
           try {
             const document = await Document.findOne({ _id: roomId });
@@ -33,12 +28,7 @@ export const createHocuspocusServer = (httpServer: Server) => {
             }
 
             if (Buffer.isBuffer(document.content) && document.content.length > 0) {
-              const contentBase64 = document.content.toString('base64');
-              const contentString = Buffer.from(contentBase64, 'base64').toString('utf-8');
-              const sanitizedContentString = purify.sanitize(contentString);
-              const sanitizedContentBase64 = Buffer.from(sanitizedContentString, 'utf-8').toString('base64');
-
-              return new Uint8Array(Buffer.from(sanitizedContentBase64, 'base64'));
+              return new Uint8Array(document.content);
             } else {
               return null;
             }
@@ -48,46 +38,28 @@ export const createHocuspocusServer = (httpServer: Server) => {
         },
         store: async ({ state, context, requestParameters }) => {
           const roomId = requestParameters.get('roomId');
-
-          if (!roomId || !validator.isUUID(roomId)) {
-            throw new Error('Invalid room ID');
-          }
+          if (!roomId || !validator.isMongoId(roomId)) throw new Error('Invalid room ID');
 
           try {
-            let sanitizedState = state;
+            const existingDocument = await Document.findOne({ _id: roomId });
 
-            if (Buffer.isBuffer(state)) {
-              const stateBase64 = state.toString('base64');
-              const stateString = Buffer.from(stateBase64, 'base64').toString('utf-8');
-              const sanitizedString = purify.sanitize(stateString);
-              const sanitizedBase64 = Buffer.from(sanitizedString, 'utf-8').toString('base64');
-              sanitizedState = Buffer.from(sanitizedBase64, 'base64');
-            }
-
-            let existingDocument = await Document.findOne({ _id: roomId });
-
-            if (Buffer.isBuffer(sanitizedState) && sanitizedState.length > 0) {
+            if (Buffer.isBuffer(state) && state.length > 0) {
               if (existingDocument) {
-                existingDocument.content = sanitizedState;
+                existingDocument.content = state;
                 existingDocument.versions.push({
-                  content: sanitizedState,
+                  content: state,
                   updatedBy: context.user?.id,
                 });
               } else {
-                existingDocument = new Document({
+                const newDocument = new Document({
                   _id: roomId,
-                  title: roomId,
-                  content: sanitizedState,
-                  versions: [{
-                    content: sanitizedState,
-                    updatedBy: context.user?.id,
-                  }],
+                  content: state,
+                  versions: [{ content: state, updatedBy: context.user?.id }],
                   createdBy: context.user?.id,
                 });
+                await newDocument.save();
               }
-              await existingDocument.save();
-            } else {
-              return;
+              await existingDocument?.save();
             }
           } catch (error) {
             throw error;
@@ -97,9 +69,8 @@ export const createHocuspocusServer = (httpServer: Server) => {
     ],
     onAuthenticate: async (data) => {
       const token = data.token;
-      if (!token) {
-        throw new Error('Unauthorized');
-      }
+      if (!token) throw new Error('Unauthorized');
+
       try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET as string) as JwtPayloadWithId;
         data.context.user = { id: decoded.id };
@@ -107,13 +78,8 @@ export const createHocuspocusServer = (httpServer: Server) => {
         throw new Error('Forbidden');
       }
     },
-    onConnect: async (data) => {
-      return Promise.resolve();
-    },
-    onDisconnect: async (data) => {
-      return Promise.resolve();
-    },
   });
+
 
   const wss = new WebSocketServer({ server: httpServer });
   wss.on('connection', (ws, req) => {

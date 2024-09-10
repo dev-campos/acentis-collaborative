@@ -17,7 +17,7 @@ const Register: React.FC = () => {
         setError("");
         try {
             const data = await registerUser(email, password);
-            login(data.token);
+            login(data.token, data.id, email);
             navigate("/documents");
         } catch (error) {
             setError((error as Error).message);

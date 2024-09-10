@@ -1,9 +1,9 @@
-/* Editor container */
+/* Set the editor to be the size of an A4 paper */
 .editor {
   margin: 20px auto;
   background-color: antiquewhite;
-  width: 21cm;
-  height: 29.7cm;
+  width: 100%;
+  height: 100px;
   display: flex;
   flex-direction: column;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
@@ -11,48 +11,13 @@
   box-sizing: border-box;
 }
 
-/* ProseMirror paragraph styling */
+
 .editor .tiptap.ProseMirror p {
   overflow-y: auto;
   width: 100%;
   height: 100%;
   box-sizing: border-box;
   padding: 1rem;
-}
-
-/* Collaboration cursor styling */
-.editor .collaboration-cursor__caret {
-  position: relative;
-  border-left: 2px solid transparent;
-}
-
-.editor .collaboration-cursor__caret::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -2px;
-  width: 2px;
-  height: 100%;
-  background-color: inherit;
-  /* Matches border-color */
-}
-
-.editor .collaboration-cursor__label {
-  position: absolute;
-  top: -1.5rem;
-  /* Positioning the label above the caret */
-  left: 50%;
-  transform: translateX(-50%);
-  /* Centering the label */
-  background-color: inherit;
-  /* Will match the dynamic color */
-  color: white;
-  padding: 0.2rem 0.5rem;
-  border-radius: 1rem;
-  /* Makes the pill shape */
-  font-size: 0.8rem;
-  white-space: nowrap;
-  box-shadow: 0 0 4px rgba(0, 0, 0, 0.2);
 }
 
 /* List styles */

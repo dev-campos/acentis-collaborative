@@ -11,7 +11,9 @@ interface AuthContextType {
     isAuthenticated: boolean;
     isRegistered: boolean;
     token: string | null;
-    login: (token: string) => void;
+    id: string | null;
+    email: string | null;
+    login: (token: string, id: string, email: string) => void;
     register: () => void;
     logout: () => void;
 }
@@ -27,6 +29,10 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
 }) => {
     const [token, setToken] = useState<string | null>(
         localStorage.getItem("token")
+    );
+    const [id, setId] = useState<string | null>(localStorage.getItem("id"));
+    const [email, setEmail] = useState<string | null>(
+        localStorage.getItem("email")
     );
     const [isRegistered, setIsRegistered] = useState<boolean>(
         !!localStorage.getItem("isRegistered")
@@ -44,22 +50,33 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
 
     useEffect(() => {
         const storedToken = localStorage.getItem("token");
-        if (storedToken && !isTokenExpired(storedToken)) {
+        const storedId = localStorage.getItem("id");
+        const storedEmail = localStorage.getItem("email");
+
+        if (
+            storedToken &&
+            !isTokenExpired(storedToken) &&
+            storedId &&
+            storedEmail
+        ) {
             setToken(storedToken);
+            setId(storedId);
+            setEmail(storedEmail);
         } else {
             logout();
         }
 
-        const registeredStatus = localStorage.getItem("isRegistered");
-        if (registeredStatus) {
-            setIsRegistered(true);
-        }
+        setIsRegistered(!!localStorage.getItem("isRegistered"));
     }, []);
 
-    const login = (newToken: string) => {
+    const login = (newToken: string, id: string, email: string) => {
         if (!isTokenExpired(newToken)) {
             setToken(newToken);
+            setId(id);
+            setEmail(email);
             localStorage.setItem("token", newToken);
+            localStorage.setItem("id", id);
+            localStorage.setItem("email", email);
         } else {
             logout();
         }
@@ -73,8 +90,12 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
     const logout = () => {
         setToken(null);
         setIsRegistered(false);
+        setId(null);
+        setEmail(null);
         localStorage.removeItem("token");
         localStorage.removeItem("isRegistered");
+        localStorage.removeItem("id");
+        localStorage.removeItem("email");
     };
 
     return (
@@ -83,6 +104,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
                 isAuthenticated: !!token,
                 isRegistered,
                 token,
+                id,
+                email,
                 login,
                 register,
                 logout,
