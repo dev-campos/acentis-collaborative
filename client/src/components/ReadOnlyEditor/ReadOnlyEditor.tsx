@@ -2,7 +2,6 @@ import React, { useEffect } from "react";
 import { Editor, EditorContent, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import * as Y from "yjs";
-import { generateHTML } from "@tiptap/html";
 import { yXmlFragmentToProseMirrorRootNode } from "y-prosemirror";
 import styles from "./ReadOnlyEditor.module.css";
 
@@ -16,12 +15,12 @@ const ReadOnlyEditor: React.FC<ReadOnlyEditorProps> = ({ content }) => {
         editable: false,
     });
 
-    const extensions = [StarterKit];
     const xmlFragmentName = "default";
 
     const getHtmlFromByteArray = (
         editor: Editor,
         rawContent: Uint8Array
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
     ): any => {
         const ydoc = new Y.Doc();
         Y.applyUpdate(ydoc, rawContent);
@@ -37,7 +36,7 @@ const ReadOnlyEditor: React.FC<ReadOnlyEditorProps> = ({ content }) => {
         if (editor && content) {
             const array = new Uint8Array(content.data);
             const jsonContent = getHtmlFromByteArray(editor, array);
-            editor.commands.setContent(jsonContent); // Set content using JSON
+            editor.commands.setContent(jsonContent);
         }
     }, [content, editor]);
 

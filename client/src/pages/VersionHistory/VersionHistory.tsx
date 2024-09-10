@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useParams, Link, useNavigate } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { fetchVersionHistory, rollbackDocument } from "../../api/documents";
 import styles from "./VersionHistory.module.css";
