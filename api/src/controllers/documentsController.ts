@@ -49,7 +49,6 @@ export const createDocument = async (req: AuthenticatedRequest, res: Response) =
         await newDocument.save();
         return res.status(201).json(newDocument);
     } catch (error) {
-        console.error('Error creating document:', error);
         return res.status(500).json({ message: 'Error creating document', error });
     }
 };

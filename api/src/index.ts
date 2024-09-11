@@ -30,15 +30,21 @@ app.use('/api', documentRoutes);
 
 setupSwagger(app);
 
-// Create the HTTP server
 const server = createServer(app);
 
+const { close } = createHocuspocusServer(server);
 
-// Start the WebSocket server with Hocuspocus
-createHocuspocusServer(server);
+if (process.env.NODE_ENV !== 'test') {
+    const PORT = parseInt(process.env.PORT || '5001', 10);
+    server.listen(PORT, '0.0.0.0', () => {
+        console.log(`Server running on port ${PORT}`);
+    });
+}
 
-// Start the HTTP server
-const PORT = parseInt(process.env.PORT || '5001', 10);
-server.listen(PORT, '0.0.0.0', () => {
-    console.log(`Server running on port ${PORT}`);
+server.on('close', () => {
+    close()
 });
+
+export { app, server };
+
+

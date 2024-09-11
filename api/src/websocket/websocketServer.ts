@@ -6,16 +6,17 @@ import jwt, { JwtPayload } from 'jsonwebtoken';
 import { Server } from "http";
 import { WebSocketServer } from 'ws';
 import validator from 'validator';
-import { fromUint8Array } from 'js-base64';
 
 interface JwtPayloadWithId extends JwtPayload {
   id: string;
 }
 
 export const createHocuspocusServer = (httpServer: Server) => {
+
+  const throttleExtension = new Throttle({ throttle: 15, banTime: 5 })
   const hocuspocusServer = HocuspocusServer.configure({
     extensions: [
-      new Throttle({ throttle: 15, banTime: 5 }),
+      throttleExtension,
       new Database({
         fetch: async ({ requestParameters }) => {
           const roomId = requestParameters.get('roomId');
@@ -80,9 +81,19 @@ export const createHocuspocusServer = (httpServer: Server) => {
     },
   });
 
-
   const wss = new WebSocketServer({ server: httpServer });
+
   wss.on('connection', (ws, req) => {
     hocuspocusServer.handleConnection(ws, req);
   });
+
+  return {
+    close: async () => {
+      if (throttleExtension.cleanupInterval) {
+        clearInterval(throttleExtension.cleanupInterval as NodeJS.Timeout);
+      }
+      wss.close();
+      await hocuspocusServer.destroy();
+    }
+  };
 };

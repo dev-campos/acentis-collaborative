@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import validator from 'validator';
-import User from '../models/User';
+import { User } from '../models/User';
 import dotenv from 'dotenv';
 
 dotenv.config();
@@ -29,12 +29,13 @@ export const register = async (req: Request, res: Response) => {
 
         const hashedPassword = await bcrypt.hash(password, 10);
         const newUser = new User({ email, password: hashedPassword });
+
         await newUser.save();
 
         const token = jwt.sign({ id: newUser._id, email: newUser.email }, SECRET_KEY, { expiresIn: '1h' });
-        res.status(201).json({ token, id: newUser._id });
+        return res.status(201).json({ token, id: newUser._id });
     } catch (error) {
-        res.status(500).json({ message: 'Server error', error });
+        return res.status(500).json({ message: 'Server error', error });
     }
 };
 
@@ -52,18 +53,19 @@ export const login = async (req: Request, res: Response) => {
         }
 
         const user = await User.findOne({ email });
+
         if (!user) {
             return res.status(400).json({ message: 'Invalid credentials' });
         }
 
-        const isMatch = await bcrypt.compare(password, user.password);
+        const isMatch = await bcrypt.compare(password, user.password as string);
         if (!isMatch) {
             return res.status(400).json({ message: 'Invalid credentials' });
         }
 
         const token = jwt.sign({ id: user._id, email: user.email }, SECRET_KEY, { expiresIn: '1h' });
-        res.status(200).json({ token, id: user._id });
+        return res.status(200).json({ token, id: user._id });
     } catch (error) {
-        res.status(500).json({ message: 'Server error' });
+        return res.status(500).json({ message: 'Server error' });
     }
 };
