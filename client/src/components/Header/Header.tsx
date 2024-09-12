@@ -8,36 +8,41 @@ const Header: React.FC = () => {
 
     return (
         <header className={styles.header}>
-            <nav>
-                <ul>
-                    <li>
-                        <Link to="/">Home</Link>
-                    </li>
-                    {isAuthenticated ? (
-                        <>
-                            <li>
-                                <Link to="/documents">Documents</Link>
-                            </li>
-                            <li>
-                                <button onClick={logout}>Logout</button>
-                            </li>
-                        </>
-                    ) : isRegistered ? (
+            <div className={styles.navContainer}>
+                <Link to="/" className={styles.brand}>
+                    Acentis
+                </Link>
+                <nav>
+                    <ul>
                         <li>
-                            <Link to="/login">Login</Link>
+                            <Link to="/">Home</Link>
                         </li>
-                    ) : (
-                        <>
-                            <li>
-                                <Link to="/register">Register</Link>
-                            </li>
+                        {isAuthenticated ? (
+                            <>
+                                <li>
+                                    <Link to="/documents">Documents</Link>
+                                </li>
+                                <li>
+                                    <button onClick={logout}>Logout</button>
+                                </li>
+                            </>
+                        ) : isRegistered ? (
                             <li>
                                 <Link to="/login">Login</Link>
                             </li>
-                        </>
-                    )}
-                </ul>
-            </nav>
+                        ) : (
+                            <>
+                                <li>
+                                    <Link to="/register">Register</Link>
+                                </li>
+                                <li>
+                                    <Link to="/login">Login</Link>
+                                </li>
+                            </>
+                        )}
+                    </ul>
+                </nav>
+            </div>
         </header>
     );
 };

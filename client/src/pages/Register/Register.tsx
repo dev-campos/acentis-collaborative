@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useAuth } from "../../context/AuthContext";
 import { registerUser } from "../../api/auth";
 import { useNavigate } from "react-router-dom";
+import styles from "./Register.module.css"; // Import the CSS Module
 
 const Register: React.FC = () => {
     const [email, setEmail] = useState("");
@@ -27,8 +28,15 @@ const Register: React.FC = () => {
     };
 
     return (
-        <form onSubmit={handleRegister}>
-            {error && <p>{error}</p>}
+        <form
+            onSubmit={handleRegister}
+            data-testid="register-form"
+            className={styles.form}>
+            {error && (
+                <p data-testid="error-message" className={styles.error}>
+                    {error}
+                </p>
+            )}
             <input
                 type="email"
                 value={email}
@@ -36,6 +44,8 @@ const Register: React.FC = () => {
                 placeholder="Email"
                 required
                 disabled={loading}
+                data-testid="email-input"
+                className={styles.input}
             />
             <input
                 type="password"
@@ -44,8 +54,14 @@ const Register: React.FC = () => {
                 placeholder="Password"
                 required
                 disabled={loading}
+                data-testid="password-input"
+                className={styles.input}
             />
-            <button type="submit" disabled={loading}>
+            <button
+                type="submit"
+                disabled={loading}
+                data-testid="submit-button"
+                className={styles.button}>
                 {loading ? "Registering..." : "Register"}
             </button>
         </form>

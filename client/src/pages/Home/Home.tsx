@@ -1,7 +1,14 @@
 import React from "react";
+import styles from "./Home.module.css";
 
 const Home: React.FC = () => {
-    return <div>Home Placeholder</div>;
+    return (
+        <div className={styles.hero}>
+            <div className={styles.heroText}>
+                Welcome to Acentis Collaborative Editor
+            </div>
+        </div>
+    );
 };
 
 export default Home;

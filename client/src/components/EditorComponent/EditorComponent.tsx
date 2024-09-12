@@ -8,6 +8,8 @@ import { HocuspocusProvider } from "@hocuspocus/provider";
 import { useAuth } from "../../context/AuthContext";
 import { generateColorFromEmail } from "../../utils/utils";
 import "./cursor.css";
+import * as Y from "yjs";
+import ErrorBoundary from "../ErrorBoundary/ErrorBoundary";
 
 interface EditorComponentProps {
     provider: HocuspocusProvider;
@@ -21,13 +23,13 @@ const EditorComponent: React.FC<EditorComponentProps> = ({ provider }) => {
                 history: false,
             }),
             Collaboration.configure({
-                document: provider?.document || null,
+                document: provider?.document ?? new Y.Doc(),
             }),
             CollaborationCursor.configure({
                 provider,
                 user: {
                     name: email,
-                    color: generateColorFromEmail(email),
+                    color: generateColorFromEmail(email || "Anonymous"),
                 },
             }),
         ],
@@ -43,7 +45,15 @@ const EditorComponent: React.FC<EditorComponentProps> = ({ provider }) => {
         onCreate: () => console.log("Editor created"),
     });
 
-    return <EditorContent className={styles.editor} editor={editor} />;
+    return (
+        <ErrorBoundary>
+            <EditorContent
+                data-testid="editor"
+                className={styles.editor}
+                editor={editor}
+            />
+        </ErrorBoundary>
+    );
 };
 
 export default EditorComponent;

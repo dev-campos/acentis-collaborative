@@ -46,21 +46,23 @@ export const createHocuspocusServer = (httpServer: Server) => {
 
             if (Buffer.isBuffer(state) && state.length > 0) {
               if (existingDocument) {
+                existingDocument.title = roomId;
                 existingDocument.content = state;
                 existingDocument.versions.push({
                   content: state,
                   updatedBy: context.user?.id,
                 });
+                await existingDocument.save();
               } else {
                 const newDocument = new Document({
                   _id: roomId,
+                  title: roomId,
                   content: state,
                   versions: [{ content: state, updatedBy: context.user?.id }],
                   createdBy: context.user?.id,
                 });
                 await newDocument.save();
               }
-              await existingDocument?.save();
             }
           } catch (error) {
             throw error;

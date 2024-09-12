@@ -7,24 +7,19 @@ import {
     fetchDocuments,
     deleteDocument,
 } from "../../api/documents";
-import { JwtPayload, jwtDecode } from "jwt-decode";
 
-interface JwtPayloadWithId extends JwtPayload {
-    id: string;
-}
-
-interface DocumentVersion {
+interface Version {
     _id: string;
-    content: string;
-    updatedBy: string;
     createdAt: string;
+    updatedBy: string;
+    content: { type: string; data: number[] };
 }
 
 interface Document {
     _id: string;
     title: string;
     content: string;
-    versions: DocumentVersion[];
+    versions: Version[];
     createdBy: string;
     createdAt: string;
     updatedAt: string;
@@ -34,19 +29,7 @@ const DocumentList: React.FC = () => {
     const [documents, setDocuments] = useState<Document[]>([]);
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
-    const { token } = useAuth();
-
-    const getUserIdFromToken = (token: string): string | null => {
-        try {
-            const decoded: JwtPayloadWithId = jwtDecode(token);
-            return decoded.id;
-        } catch (error) {
-            console.error("Error decoding token:", error);
-            return null;
-        }
-    };
-
-    const userId = token ? getUserIdFromToken(token) : null;
+    const { token, id } = useAuth();
 
     useEffect(() => {
         const getDocuments = async () => {
@@ -102,39 +85,52 @@ const DocumentList: React.FC = () => {
     };
 
     return (
-        <div className={styles.documentList}>
-            <h2>Your Documents</h2>
-            <button
-                onClick={handleNewDocument}
-                className={styles.newButton}
-                disabled={loading}>
-                {loading ? "Loading..." : "Start New Document"}
-            </button>
-            {loading ? (
-                <p>Loading documents...</p>
-            ) : (
-                <ul className={styles.list}>
-                    {documents.map((doc) => (
-                        <li key={doc._id} className={styles.listItem}>
-                            <Link
-                                to={`/documents/${doc._id}`}
-                                className={styles.link}>
-                                {doc.title}
-                            </Link>
-                            {doc.createdBy === userId && (
-                                <button
-                                    className={styles.deleteButton}
-                                    onClick={() =>
-                                        handleDeleteDocument(doc._id)
-                                    }
-                                    disabled={loading}>
-                                    Delete
-                                </button>
-                            )}
-                        </li>
-                    ))}
-                </ul>
-            )}
+        <div className={styles.pageBackground}>
+            <div className={styles.documentList} data-testid="document-list">
+                <h2>Your Documents</h2>
+                <button
+                    onClick={handleNewDocument}
+                    className={styles.newButton}
+                    disabled={loading}
+                    data-testid="new-document-button">
+                    {loading ? "Loading..." : "Start New Document"}
+                </button>
+                {loading && (
+                    <p data-testid="loading-text">Loading documents...</p>
+                )}
+                {!loading && documents && documents.length === 0 && (
+                    <p data-testid="no-docs-text">No Documents</p>
+                )}
+
+                {!loading && documents && documents.length > 0 && (
+                    <ul className={styles.list} data-testid="document-items">
+                        {documents.map((doc) => (
+                            <li
+                                key={doc._id}
+                                className={styles.listItem}
+                                data-testid={`document-${doc._id}`}>
+                                <Link
+                                    to={`/documents/${doc._id}`}
+                                    className={styles.link}
+                                    data-testid={`document-link-${doc._id}`}>
+                                    {doc.title}
+                                </Link>
+                                {doc.createdBy === id && (
+                                    <button
+                                        className={styles.deleteButton}
+                                        onClick={() =>
+                                            handleDeleteDocument(doc._id)
+                                        }
+                                        disabled={loading}
+                                        data-testid={`delete-document-${doc._id}`}>
+                                        Delete
+                                    </button>
+                                )}
+                            </li>
+                        ))}
+                    </ul>
+                )}
+            </div>
         </div>
     );
 };

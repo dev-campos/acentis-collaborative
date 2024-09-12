@@ -39,14 +39,17 @@ export const getDocuments = async (req: Request, res: Response) => {
 export const createDocument = async (req: AuthenticatedRequest, res: Response) => {
     const userId = req.user?.id;
 
+
     try {
         const newDocument = new Document({
-            title: 'No title set',
             content: Buffer.from(''),
             versions: [],
             createdBy: userId,
         });
-        await newDocument.save();
+
+        newDocument.title = newDocument._id.toString()
+        await newDocument.save()
+
         return res.status(201).json(newDocument);
     } catch (error) {
         return res.status(500).json({ message: 'Error creating document', error });

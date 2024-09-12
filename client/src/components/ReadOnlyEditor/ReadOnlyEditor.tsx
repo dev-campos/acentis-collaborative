@@ -4,6 +4,7 @@ import StarterKit from "@tiptap/starter-kit";
 import * as Y from "yjs";
 import { yXmlFragmentToProseMirrorRootNode } from "y-prosemirror";
 import styles from "./ReadOnlyEditor.module.css";
+import ErrorBoundary from "../ErrorBoundary/ErrorBoundary";
 
 interface ReadOnlyEditorProps {
     content: { type: string; data: number[] };
@@ -20,27 +21,41 @@ const ReadOnlyEditor: React.FC<ReadOnlyEditorProps> = ({ content }) => {
     const getHtmlFromByteArray = (
         editor: Editor,
         rawContent: Uint8Array
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    ): any => {
-        const ydoc = new Y.Doc();
-        Y.applyUpdate(ydoc, rawContent);
-        const yXmlFragment = ydoc.get(xmlFragmentName, Y.XmlFragment);
-        const rootNode = yXmlFragmentToProseMirrorRootNode(
-            yXmlFragment,
-            editor.schema
-        );
-        return rootNode.toJSON(); // Return JSON, not HTML
+    ): { type: string; content: any[] } => {
+        try {
+            const ydoc = new Y.Doc();
+            Y.applyUpdate(ydoc, rawContent);
+            const yXmlFragment = ydoc.get(xmlFragmentName, Y.XmlFragment);
+            const rootNode = yXmlFragmentToProseMirrorRootNode(
+                yXmlFragment,
+                editor.schema
+            );
+            return rootNode.toJSON() as { type: string; content: any[] };
+        } catch (error) {
+            console.error("Error processing content:", error);
+            return { type: "doc", content: [] };
+        }
     };
 
     useEffect(() => {
         if (editor && content) {
-            const array = new Uint8Array(content.data);
-            const jsonContent = getHtmlFromByteArray(editor, array);
-            editor.commands.setContent(jsonContent);
+            if (content.data.length > 0) {
+                const array = new Uint8Array(content.data);
+                const jsonContent = getHtmlFromByteArray(editor, array);
+                editor.commands.setContent(jsonContent);
+            }
         }
     }, [content, editor]);
 
-    return <EditorContent className={styles.editor} editor={editor} />;
+    return (
+        <ErrorBoundary>
+            <EditorContent
+                data-testid="roeditor"
+                className={styles.editor}
+                editor={editor}
+            />
+        </ErrorBoundary>
+    );
 };
 
 export default ReadOnlyEditor;

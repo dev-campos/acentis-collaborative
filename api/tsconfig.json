@@ -14,7 +14,8 @@
     },
     "typeRoots": ["./src/types", "./node_modules/@types"]
   },
-  "types": ["node", "jest", "sinon"],
+  "types": ["node", "jest"],
   "include": ["src/**/*"],
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules"],
+  
 }
