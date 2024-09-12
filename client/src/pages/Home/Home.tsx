@@ -5,7 +5,7 @@ const Home: React.FC = () => {
     return (
         <div className={styles.hero}>
             <div className={styles.heroText}>
-                Welcome to Acentis Collaborative Editor
+                Welcome to the Acentis Collaborative Editor
             </div>
         </div>
     );
