@@ -1,4 +1,4 @@
-import { vi } from "vitest";
+import { describe, it, expect, vi, Mock } from 'vitest';
 import { registerUser, loginUser } from "./auth";
 import validator from "validator";
 
@@ -22,7 +22,7 @@ describe("registerUser", () => {
     });
 
     it("should call the API with sanitized inputs and return a successful response", async () => {
-        (fetch as vi.mock).mockResolvedValueOnce({
+        (fetch as Mock).mockResolvedValueOnce({
             ok: true,
             json: async () => ({ message: "User registered successfully" }),
         });
@@ -46,7 +46,7 @@ describe("registerUser", () => {
     });
 
     it("should throw an error when the API returns a failed response", async () => {
-        (fetch as vi.mock).mockResolvedValueOnce({
+        (fetch as Mock).mockResolvedValueOnce({
             ok: false,
             json: async () => ({ message: "Registration failed" }),
         });
@@ -75,7 +75,7 @@ describe("loginUser", () => {
     });
 
     it("should call the API with sanitized inputs and return a successful response", async () => {
-        (fetch as vi.mock).mockResolvedValueOnce({
+        (fetch as Mock).mockResolvedValueOnce({
             ok: true,
             json: async () => ({ token: "12345" }),
         });
@@ -99,7 +99,7 @@ describe("loginUser", () => {
     });
 
     it("should throw an error when the API returns a failed response", async () => {
-        (fetch as vi.mock).mockResolvedValueOnce({
+        (fetch as Mock).mockResolvedValueOnce({
             ok: false,
             json: async () => ({ message: "Login failed" }),
         });

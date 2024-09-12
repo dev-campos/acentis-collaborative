@@ -3,6 +3,7 @@ import { MemoryRouter } from "react-router-dom";
 import { AuthProvider } from "../../context/AuthContext"; // Import your AuthProvider
 import Login from "./Login";
 import { loginUser } from "../../api/auth";
+import { Mock } from "vitest";
 
 vi.mock("../../api/auth", () => ({
     loginUser: vi.fn(),
@@ -40,7 +41,7 @@ test("disables inputs and shows loading while logging in", async () => {
 
 test("displays error message on failed login", async () => {
     // Mock the loginUser function to reject with an error
-    (loginUser as vi.Mock).mockRejectedValue(new Error("Invalid credentials"));
+    (loginUser as Mock).mockRejectedValue(new Error("Invalid credentials"));
 
     render(
         <AuthProvider>

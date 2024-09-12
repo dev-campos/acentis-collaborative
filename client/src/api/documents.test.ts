@@ -1,4 +1,4 @@
-import { vi } from "vitest";
+import { vi, Mock } from "vitest";
 import {
     fetchDocument,
     fetchDocuments,
@@ -23,7 +23,7 @@ describe("fetchDocument", () => {
     });
 
     it("should call the API and return the document data", async () => {
-        (fetch as vi.mock).mockResolvedValueOnce({
+        (fetch as Mock).mockResolvedValueOnce({
             ok: true,
             json: async () => ({ id: "document123", content: "Document content" }),
         });
@@ -37,7 +37,7 @@ describe("fetchDocument", () => {
     });
 
     it("should throw an error if the API response is not ok", async () => {
-        (fetch as vi.mock).mockResolvedValueOnce({
+        (fetch as Mock).mockResolvedValueOnce({
             ok: false,
             status: 404,
         });
@@ -52,7 +52,7 @@ describe("fetchDocuments", () => {
     });
 
     it("should call the API and return the documents list", async () => {
-        (fetch as vi.mock).mockResolvedValueOnce({
+        (fetch as Mock).mockResolvedValueOnce({
             ok: true,
             json: async () => [{ id: "doc1" }, { id: "doc2" }],
         });
@@ -64,7 +64,7 @@ describe("fetchDocuments", () => {
     });
 
     it("should throw an error if the API response is not ok", async () => {
-        (fetch as vi.mock).mockResolvedValueOnce({
+        (fetch as Mock).mockResolvedValueOnce({
             ok: false,
             status: 500,
         });
@@ -83,7 +83,7 @@ describe("fetchVersionHistory", () => {
     });
 
     it("should call the API and return the version history", async () => {
-        (fetch as vi.mock).mockResolvedValueOnce({
+        (fetch as Mock).mockResolvedValueOnce({
             ok: true,
             json: async () => [{ versionId: "v1" }, { versionId: "v2" }],
         });
@@ -97,7 +97,7 @@ describe("fetchVersionHistory", () => {
     });
 
     it("should throw an error if the API response is not ok", async () => {
-        (fetch as vi.mock).mockResolvedValueOnce({
+        (fetch as Mock).mockResolvedValueOnce({
             ok: false,
             status: 400,
         });
@@ -118,7 +118,7 @@ describe("createNewDocument", () => {
     });
 
     it("should call the API and return the created document", async () => {
-        (fetch as vi.mock).mockResolvedValueOnce({
+        (fetch as Mock).mockResolvedValueOnce({
             ok: true,
             json: async () => ({ id: "new-doc" }),
         });
@@ -136,7 +136,7 @@ describe("createNewDocument", () => {
     });
 
     it("should throw an error if the API response is not ok", async () => {
-        (fetch as vi.mock).mockResolvedValueOnce({
+        (fetch as Mock).mockResolvedValueOnce({
             ok: false,
             status: 403,
         });
@@ -161,7 +161,7 @@ describe("deleteDocument", () => {
     });
 
     it("should call the API to delete the document and return the response", async () => {
-        (fetch as vi.mock).mockResolvedValueOnce({
+        (fetch as Mock).mockResolvedValueOnce({
             ok: true,
             json: async () => ({ message: "Document deleted" }),
         });
@@ -181,7 +181,7 @@ describe("deleteDocument", () => {
     });
 
     it("should throw an error if the user is not authorized to delete the document", async () => {
-        (fetch as vi.mock).mockResolvedValueOnce({
+        (fetch as Mock).mockResolvedValueOnce({
             ok: false,
             status: 403,
         });
@@ -208,7 +208,7 @@ describe("rollbackDocument", () => {
     });
 
     it("should call the API to rollback the document and return the response", async () => {
-        (fetch as vi.mock).mockResolvedValueOnce({
+        (fetch as Mock).mockResolvedValueOnce({
             ok: true,
             json: async () => ({ message: "Document rolled back" }),
         });
@@ -232,7 +232,7 @@ describe("rollbackDocument", () => {
     });
 
     it("should throw an error if the API response is not ok", async () => {
-        (fetch as vi.mock).mockResolvedValueOnce({
+        (fetch as Mock).mockResolvedValueOnce({
             ok: false,
             status: 500,
         });

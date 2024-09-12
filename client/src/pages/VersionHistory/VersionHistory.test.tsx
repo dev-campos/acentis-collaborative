@@ -2,7 +2,7 @@ import { render, screen, waitFor, act } from "@testing-library/react";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 import VersionHistory from "./VersionHistory";
 import { fetchVersionHistory } from "../../api/documents";
-import { vi } from "vitest";
+import { vi, Mock } from "vitest";
 import jwt from "jsonwebtoken";
 
 const SECRET_KEY = "your-secret-key";
@@ -63,7 +63,7 @@ describe("VersionHistory", () => {
                 createdAt: "2024-09-11T21:45:09.968Z",
             },
         ];
-        (fetchVersionHistory as vi.Mock).mockResolvedValue(versions);
+        (fetchVersionHistory as Mock).mockResolvedValue(versions);
 
         await act(async () => {
             render(
@@ -103,7 +103,7 @@ describe("VersionHistory", () => {
                 createdAt: "2024-09-11T21:45:09.968Z",
             },
         ];
-        (fetchVersionHistory as vi.Mock).mockResolvedValue(versions);
+        (fetchVersionHistory as Mock).mockResolvedValue(versions);
 
         await act(async () => {
             render(
@@ -126,7 +126,7 @@ describe("VersionHistory", () => {
     });
 
     it("should display an error message if fetchVersionHistory fails with invalid document ID", async () => {
-        (fetchVersionHistory as vi.Mock).mockRejectedValue(
+        (fetchVersionHistory as Mock).mockRejectedValue(
             new Error("Invalid document ID")
         );
 

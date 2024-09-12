@@ -1,4 +1,3 @@
-import React from "react";
 import {
     render,
     screen,
@@ -6,7 +5,7 @@ import {
     waitFor,
     act,
 } from "@testing-library/react";
-import { describe, it, expect, beforeEach, vi } from "vitest";
+import { describe, it, expect, beforeEach, vi, Mock } from "vitest";
 import { BrowserRouter } from "react-router-dom";
 import Register from "./Register";
 import { useAuth } from "../../context/AuthContext";
@@ -26,7 +25,7 @@ describe("Register Component", () => {
     const mockLogin = vi.fn();
 
     beforeEach(() => {
-        (useAuth as vi.Mock).mockReturnValue({ login: mockLogin });
+        (useAuth as Mock).mockReturnValue({ login: mockLogin });
     });
 
     it("renders the register form", () => {
@@ -42,7 +41,7 @@ describe("Register Component", () => {
     });
 
     it("handles successful registration", async () => {
-        (registerUser as vi.Mock).mockResolvedValue({
+        (registerUser as Mock).mockResolvedValue({
             token: "mockToken",
             id: "mockId",
         });
@@ -74,7 +73,7 @@ describe("Register Component", () => {
     });
 
     it("handles registration error", async () => {
-        (registerUser as vi.Mock).mockRejectedValue(new Error("Invalid email"));
+        (registerUser as Mock).mockRejectedValue(new Error("Invalid email"));
 
         await act(async () => {
             render(

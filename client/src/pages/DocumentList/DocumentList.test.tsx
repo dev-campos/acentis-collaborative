@@ -5,7 +5,7 @@ import {
     waitFor,
     act,
 } from "@testing-library/react";
-import { vi } from "vitest";
+import { vi, Mock } from "vitest";
 import { MemoryRouter } from "react-router-dom";
 import DocumentList from "./DocumentList";
 import {
@@ -119,7 +119,7 @@ describe("DocumentList", () => {
             },
         ];
 
-        (fetchDocuments as vi.Mock).mockResolvedValue(mockDocuments);
+        (fetchDocuments as Mock).mockResolvedValue(mockDocuments);
 
         await act(async () => {
             render(
@@ -137,7 +137,7 @@ describe("DocumentList", () => {
     });
 
     it("should display loading state while fetching documents", async () => {
-        (fetchDocuments as vi.Mock).mockImplementation(
+        (fetchDocuments as Mock).mockImplementation(
             () => new Promise((resolve) => setTimeout(() => resolve([]), 100))
         );
 
@@ -160,7 +160,7 @@ describe("DocumentList", () => {
         const consoleErrorSpy = vi
             .spyOn(console, "error")
             .mockImplementation(() => {});
-        (fetchDocuments as vi.Mock).mockRejectedValue(
+        (fetchDocuments as Mock).mockRejectedValue(
             new Error("Failed to fetch")
         );
 
@@ -185,9 +185,7 @@ describe("DocumentList", () => {
     });
 
     it("should create a new document when the button is clicked", async () => {
-        (useAuth as vi.Mock).mockImplementation(() =>
-            createMockAuth(defaultUser)
-        );
+        (useAuth as Mock).mockImplementation(() => createMockAuth(defaultUser));
         const mockNewDocument = {
             _id: "2",
             title: "New Document",
@@ -195,8 +193,8 @@ describe("DocumentList", () => {
             content: "",
         };
 
-        (fetchDocuments as vi.Mock).mockResolvedValue([]);
-        (createNewDocument as vi.Mock).mockResolvedValue(mockNewDocument);
+        (fetchDocuments as Mock).mockResolvedValue([]);
+        (createNewDocument as Mock).mockResolvedValue(mockNewDocument);
 
         await act(async () => {
             render(
@@ -219,9 +217,7 @@ describe("DocumentList", () => {
     });
 
     it("should only show delete button if the user is the document creator", async () => {
-        (useAuth as vi.Mock).mockImplementation(() =>
-            createMockAuth(defaultUser)
-        );
+        (useAuth as Mock).mockImplementation(() => createMockAuth(defaultUser));
         const mockDocuments = [
             {
                 _id: "66e0e31ea7360ab20240e997",
@@ -237,7 +233,7 @@ describe("DocumentList", () => {
             },
         ];
 
-        (fetchDocuments as vi.Mock).mockResolvedValue(mockDocuments);
+        (fetchDocuments as Mock).mockResolvedValue(mockDocuments);
 
         render(
             <MemoryRouter>
@@ -259,9 +255,7 @@ describe("DocumentList", () => {
     });
 
     it("should delete a document when the delete button is clicked", async () => {
-        (useAuth as vi.Mock).mockImplementation(() =>
-            createMockAuth(defaultUser)
-        );
+        (useAuth as Mock).mockImplementation(() => createMockAuth(defaultUser));
         const mockDocuments = [
             {
                 _id: "66e0e31ea7360ab20240e997",
@@ -271,7 +265,7 @@ describe("DocumentList", () => {
             },
         ];
 
-        (fetchDocuments as vi.Mock).mockResolvedValue(mockDocuments);
+        (fetchDocuments as Mock).mockResolvedValue(mockDocuments);
 
         render(
             <MemoryRouter>
@@ -296,7 +290,7 @@ describe("DocumentList", () => {
     });
 
     it("should not show delete if the user the is not the document creator", async () => {
-        (useAuth as vi.Mock).mockImplementation(() =>
+        (useAuth as Mock).mockImplementation(() =>
             createMockAuth(differentUser)
         );
         const mockDocuments = [
@@ -308,7 +302,7 @@ describe("DocumentList", () => {
             },
         ];
 
-        (fetchDocuments as vi.Mock).mockResolvedValue(mockDocuments);
+        (fetchDocuments as Mock).mockResolvedValue(mockDocuments);
 
         await act(async () => {
             render(

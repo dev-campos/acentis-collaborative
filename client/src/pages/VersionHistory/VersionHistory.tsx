@@ -21,8 +21,6 @@ const VersionHistory: React.FC = () => {
 
     useEffect(() => {
         const getVersionHistory = async () => {
-            console.log(`fetchVersionHistory called with documentId: ${id}`);
-
             try {
                 setLoading(true);
                 const data = await fetchVersionHistory(id!);

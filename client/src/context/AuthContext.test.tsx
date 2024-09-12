@@ -1,8 +1,8 @@
-import { renderHook } from "@testing-library/react-hooks";
+import { render, act } from "@testing-library/react";
 import { AuthProvider, useAuth } from "./AuthContext";
 import { describe, it, expect, beforeEach } from "vitest";
 import jwt from "jsonwebtoken";
-import { ReactNode, FunctionComponent, act } from "react";
+import { FunctionComponent, ReactNode } from "react";
 
 const secretKey = "8sEJlZ8gO2WLQHkB";
 
@@ -35,36 +35,59 @@ describe("AuthContext", () => {
         });
     });
 
-    it("should update isAuthenticated when login is called with a valid (non-expired) JWT", () => {
-        const { result } = renderHook(() => useAuth(), { wrapper: Wrapper });
+    it("should update isAuthenticated when login is called with a valid (non-expired) JWT", async () => {
+        let authContext: any;
 
-        expect(result.current.isAuthenticated).toBe(false);
+        const TestComponent = () => {
+            authContext = useAuth();
+            return null;
+        };
+
+        render(
+            <Wrapper>
+                <TestComponent />
+            </Wrapper>
+        );
+
+        expect(authContext.isAuthenticated).toBe(false);
 
         const mockToken = generateMockJWT();
 
-        act(() => {
-            result.current.login(mockToken, "mock-id", "mock-email");
+        await act(async () => {
+            await authContext.login(mockToken, "mock-id", "mock-email");
         });
 
-        expect(result.current.isAuthenticated).toBe(true);
-        expect(result.current.token).toBe(mockToken);
-        expect(result.current.email).toBe("mock-email");
+        expect(authContext.isAuthenticated).toBe(true);
+        expect(authContext.token).toBe(mockToken);
+        expect(authContext.email).toBe("mock-email");
     });
 
-    it("should update isAuthenticated to false when logout is called", () => {
-        const { result } = renderHook(() => useAuth(), { wrapper: Wrapper });
+    it("should update isAuthenticated to false when logout is called", async () => {
+        let authContext: any;
+
+        const TestComponent = () => {
+            authContext = useAuth();
+            return null;
+        };
+
+        render(
+            <Wrapper>
+                <TestComponent />
+            </Wrapper>
+        );
 
         const mockToken = generateMockJWT();
-        act(() => {
-            result.current.login(mockToken, "mock-id", "mock-email");
+
+        await act(async () => {
+            await authContext.login(mockToken, "mock-id", "mock-email");
         });
 
-        expect(result.current.isAuthenticated).toBe(true);
+        expect(authContext.isAuthenticated).toBe(true);
 
-        act(() => {
-            result.current.logout();
+        await act(async () => {
+            await authContext.logout();
         });
 
-        expect(result.current.isAuthenticated).toBe(false);
+        expect(authContext.isAuthenticated).toBe(false);
     });
 });

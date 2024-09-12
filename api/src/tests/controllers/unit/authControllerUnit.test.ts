@@ -2,9 +2,8 @@ import { register, login } from '../../../controllers/authController';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import validator from 'validator';
-import { IUser, User } from '../../../models/User';
+import { User } from '../../../models/User';
 import { Request, Response } from 'express';
-import mongoose from 'mongoose';
 
 jest.mock('bcryptjs');
 jest.mock('jsonwebtoken');
