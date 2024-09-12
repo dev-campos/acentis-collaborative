@@ -1,3 +1,11 @@
 {
-    "buildCommand": "yarn build"
+    "build": {
+        "command": "yarn build"
+    },
+    "rewrites": [
+        {
+            "source": "/(.*)",
+            "destination": "/"
+        }
+    ]
 }
