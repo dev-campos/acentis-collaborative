@@ -80,6 +80,7 @@ const VersionHistory: React.FC = () => {
                                             content={version.content}
                                         />
                                         <button
+                                            className={styles.rollbackButton}
                                             onClick={() =>
                                                 handleRollback(version._id)
                                             }>
