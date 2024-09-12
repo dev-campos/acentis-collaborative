@@ -83,10 +83,8 @@ describe('Auth Controller', () => {
             (User.findOne as jest.Mock).mockResolvedValue(null);
             (User.prototype.save as jest.Mock).mockResolvedValue(savedUser);
 
-            // Mocking bcrypt
             (bcrypt.hash as jest.Mock).mockResolvedValue(hashedPassword);
 
-            // Mocking jwt
             (jwt.sign as jest.Mock).mockReturnValue(token);
 
             await register(req as Request, res as Response);
@@ -166,7 +164,7 @@ describe('Auth Controller', () => {
 
             await login(req as Request, res as Response);
 
-            expect(bcrypt.compare).toHaveBeenCalledWith(req.body.password, user.password); // Adjusted to use req.body.password
+            expect(bcrypt.compare).toHaveBeenCalledWith(req.body.password, user.password);
             expect(statusMock).toHaveBeenCalledWith(200);
             expect(jsonMock).toHaveBeenCalledWith({ token, id: user._id });
         });

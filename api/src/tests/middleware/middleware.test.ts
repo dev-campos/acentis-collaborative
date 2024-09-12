@@ -14,7 +14,7 @@ describe('authenticateToken middleware', () => {
     let next: NextFunction;
 
     beforeEach(() => {
-        req = { headers: {} as IncomingHttpHeaders, }; // Explicitly initialize headers as an empty object
+        req = { headers: {} as IncomingHttpHeaders, };
         res = {
             sendStatus: jest.fn(),
         };

@@ -221,7 +221,7 @@ describe("DocumentList", () => {
         const mockDocuments = [
             {
                 _id: "66e0e31ea7360ab20240e997",
-                title: "No title set",
+                title: "66e0e31ea7360ab20240e997",
                 createdBy: defaultUser._id,
                 content: "",
             },
@@ -259,7 +259,7 @@ describe("DocumentList", () => {
         const mockDocuments = [
             {
                 _id: "66e0e31ea7360ab20240e997",
-                title: "No title set",
+                title: "66e0e31ea7360ab20240e997",
                 createdBy: defaultUser._id,
                 content: "",
             },
@@ -296,7 +296,7 @@ describe("DocumentList", () => {
         const mockDocuments = [
             {
                 _id: "66e0e31ea7360ab20240e997",
-                title: "No title set",
+                title: "66e0e31ea7360ab20240e997",
                 createdBy: defaultUser._id,
                 content: "",
             },

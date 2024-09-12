@@ -15,7 +15,7 @@ describe('User Authentication Integration Tests', () => {
 
     afterAll(async () => {
         await mongoose.disconnect();
-        server.close(); // Ensure the server is closed after all tests
+        server.close();
     });
 
     afterEach(async () => {

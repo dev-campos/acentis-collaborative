@@ -11,12 +11,10 @@ import Register from "./Register";
 import { useAuth } from "../../context/AuthContext";
 import { registerUser } from "../../api/auth";
 
-// Mock the useAuth hook
 vi.mock("../../context/AuthContext", () => ({
     useAuth: vi.fn(),
 }));
 
-// Mock the registerUser function
 vi.mock("../../api/auth", () => ({
     registerUser: vi.fn(),
 }));

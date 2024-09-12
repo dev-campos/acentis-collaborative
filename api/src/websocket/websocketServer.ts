@@ -3,15 +3,13 @@ import { Throttle } from "@hocuspocus/extension-throttle";
 import { Database } from '@hocuspocus/extension-database';
 import { Document } from '../models/Document';
 import jwt, { JwtPayload } from 'jsonwebtoken';
-import { Server } from "http";
-import { WebSocketServer } from 'ws';
 import validator from 'validator';
 
 interface JwtPayloadWithId extends JwtPayload {
   id: string;
 }
 
-export const createHocuspocusServer = (httpServer: Server) => {
+export const createHocuspocusServer = () => {
 
   const throttleExtension = new Throttle({ throttle: 15, banTime: 5 })
   const hocuspocusServer = HocuspocusServer.configure({
@@ -83,19 +81,13 @@ export const createHocuspocusServer = (httpServer: Server) => {
     },
   });
 
-  const wss = new WebSocketServer({ server: httpServer });
-
-  wss.on('connection', (ws, req) => {
-    hocuspocusServer.handleConnection(ws, req);
-  });
-
   return {
+    hocuspocusServer,
     close: async () => {
       if (throttleExtension.cleanupInterval) {
         clearInterval(throttleExtension.cleanupInterval as NodeJS.Timeout);
       }
-      wss.close();
       await hocuspocusServer.destroy();
-    }
+    },
   };
 };

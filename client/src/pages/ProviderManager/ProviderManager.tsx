@@ -34,7 +34,6 @@ const ProviderManager: React.FC = () => {
             onClose: (data) => {
                 console.log("Connection closed", event);
 
-                // Check if the WebSocket was closed due to authentication issues
                 if (
                     data.event.code === 4001 ||
                     data.event.reason === "Unauthorized" ||

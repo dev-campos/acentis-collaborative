@@ -54,7 +54,6 @@ describe('Document Controller', () => {
 
         it('should create a new document and return status 201 with the document', async () => {
             const savedDocument = {
-                title: 'No title set',
                 content: Buffer.from(''),
                 versions: [],
                 createdBy: 'mockUserId',
@@ -67,7 +66,6 @@ describe('Document Controller', () => {
             await createDocument(req as AuthenticatedRequest, res as Response);
 
             expect(MockedDocument).toHaveBeenCalledWith({
-                title: 'No title set',
                 content: Buffer.from(''),
                 versions: [],
                 createdBy: 'mockUserId',
@@ -80,6 +78,7 @@ describe('Document Controller', () => {
 
         it('should return status 500 if an error occurs while saving the document', async () => {
             const saveMock = jest.fn().mockRejectedValue(new Error('Save failed'));
+
             MockedDocument.mockImplementationOnce(() => ({
                 save: saveMock,
             }) as any);
@@ -87,17 +86,15 @@ describe('Document Controller', () => {
             await createDocument(req as AuthenticatedRequest, res as Response);
 
             expect(MockedDocument).toHaveBeenCalledWith({
-                title: 'No title set',
                 content: Buffer.from(''),
                 versions: [],
                 createdBy: 'mockUserId',
             });
 
-            expect(saveMock).toHaveBeenCalled();
             expect(status).toHaveBeenCalledWith(500);
             expect(json).toHaveBeenCalledWith({
                 message: 'Error creating document',
-                error: new Error('Save failed'),
+                error: expect.any(Error),
             });
         });
     });

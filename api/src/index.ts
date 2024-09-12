@@ -4,9 +4,10 @@ import mongoose from 'mongoose';
 import authRoutes from './routes/authRoutes';
 import documentRoutes from './routes/documentRoutes';
 import { setupSwagger } from './swagger';
-import { createServer } from 'http';
 import { createHocuspocusServer } from './websocket/websocketServer';
 import dotenv from 'dotenv';
+import { createServer } from 'http';
+import { WebSocketServer } from 'ws';
 
 dotenv.config();
 
@@ -32,7 +33,12 @@ setupSwagger(app);
 
 const server = createServer(app);
 
-const { close } = createHocuspocusServer(server);
+const { hocuspocusServer, close } = createHocuspocusServer();
+
+const wsServer = new WebSocketServer({ server });
+wsServer.on('connection', (ws, req) => {
+    hocuspocusServer.handleConnection(ws, req);
+});
 
 if (process.env.NODE_ENV !== 'test') {
     const PORT = parseInt(process.env.PORT || '5001', 10);
@@ -43,8 +49,7 @@ if (process.env.NODE_ENV !== 'test') {
 
 server.on('close', () => {
     close()
-});
+    wsServer.close()
+})
 
 export { app, server };
-
-
