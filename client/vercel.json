@@ -1,7 +1,5 @@
 {
-    "build": {
-        "command": "yarn build"
-    },
+    "buildCommand": "yarn build",
     "rewrites": [
         {
             "source": "/(.*)",
