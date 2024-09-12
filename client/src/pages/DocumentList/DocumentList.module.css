@@ -1,15 +1,29 @@
+.pageBackground {
+  background: linear-gradient(135deg, #4d79ff, #1e90ff);
+  min-height: 100vh;
+  padding: 20px;
+}
+
 .documentList {
   max-width: 600px;
-  margin: 0 auto;
+  margin: 40px auto;
+  padding: 20px;
+  background-color: #f9f9f9;
+  color: #333;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .newButton {
-  padding: 10px 20px;
+  padding: 12px 24px;
   margin-bottom: 20px;
   background-color: #282c34;
   color: white;
   border: none;
   cursor: pointer;
+  font-size: 1.1rem;
+  border-radius: 6px;
+  transition: background-color 0.3s ease;
 }
 
 .newButton:hover {
@@ -19,30 +33,41 @@
 .list {
   list-style: none;
   padding: 0;
+  margin: 0;
 }
 
 .link {
   color: #61dafb;
   text-decoration: none;
+  font-size: 1.1rem;
+  transition: color 0.3s ease, text-decoration 0.3s ease;
 }
 
 .link:hover {
   text-decoration: underline;
+  color: #21a1f1;
 }
 
 .listItem {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px solid #eaeaea;
+}
+
+.listItem:last-child {
+  border-bottom: none;
 }
 
 .deleteButton {
-  background-color: red;
+  background-color: #ff4d4d;
   color: white;
   border: none;
   cursor: pointer;
-  padding: 5px 10px;
-  border-radius: 4px;
+  padding: 8px 16px;
+  border-radius: 6px;
+  transition: background-color 0.3s ease;
 }
 
 .deleteButton:hover {

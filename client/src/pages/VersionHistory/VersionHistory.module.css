@@ -1,29 +1,83 @@
+.pageBackground {
+  background: linear-gradient(135deg, #4d79ff, #1e90ff);
+  min-height: calc(100vh - 80px);
+  padding: 40px 20px;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+
 .versionHistory {
-  max-width: 800px;
-  margin: 20px auto;
+  max-width: 900px;
+  margin: 40px auto;
+  padding: 20px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+h3 {
+  text-align: center;
+  margin-bottom: 20px;
+  font-size: 1.8rem;
+  color: #333;
 }
 
 .backLink {
-  display: block;
+  display: inline-block;
   margin-bottom: 20px;
+  padding: 10px 20px;
+  background-color: #282c34;
   color: #61dafb;
   text-decoration: none;
+  border-radius: 6px;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .backLink:hover {
-  text-decoration: underline;
+  background-color: #61dafb;
+  color: #282c34;
 }
 
 .versionList {
   list-style: none;
   padding: 0;
+  margin: 0;
 }
 
 .versionList li {
-  padding: 10px;
-  border-bottom: 1px solid #ddd;
+  margin-bottom: 20px;
+  padding: 15px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  background-color: #fff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
-.button {
-  background-color: blue;
+.versionList li div {
+  margin-bottom: 10px;
+  font-weight: bold;
+  color: #333;
+}
+
+button {
+  padding: 10px 15px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+button:hover {
+  background-color: #0056b3;
+}
+
+.loading,
+.error {
+  text-align: center;
+  margin-top: 20px;
+  font-size: 1.5rem;
+  color: #666;
 }

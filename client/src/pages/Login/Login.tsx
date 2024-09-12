@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useAuth } from "../../context/AuthContext";
 import { loginUser } from "../../api/auth";
 import { useNavigate } from "react-router-dom";
+import styles from "./Login.module.css";
 
 const Login: React.FC = () => {
     const [email, setEmail] = useState("");
@@ -27,28 +28,36 @@ const Login: React.FC = () => {
     };
 
     return (
-        <form onSubmit={handleLogin}>
-            {error && <p>{error}</p>}
-            <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="Email"
-                required
-                disabled={loading}
-            />
-            <input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="Password"
-                required
-                disabled={loading}
-            />
-            <button type="submit" disabled={loading}>
-                {loading ? "Logging in..." : "Login"}
-            </button>
-        </form>
+        <div className={styles.pageBackground}>
+            <form onSubmit={handleLogin} className={styles.form}>
+                {error && <p className={styles.error}>{error}</p>}
+                <h2>Login to your account</h2>
+                <input
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="Email"
+                    required
+                    disabled={loading}
+                    className={styles.input}
+                />
+                <input
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="Password"
+                    required
+                    disabled={loading}
+                    className={styles.input}
+                />
+                <button
+                    type="submit"
+                    disabled={loading}
+                    className={styles.button}>
+                    {loading ? "Logging in..." : "Login"}
+                </button>
+            </form>
+        </div>
     );
 };
 

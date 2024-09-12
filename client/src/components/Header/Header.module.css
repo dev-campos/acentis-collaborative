@@ -1,8 +1,24 @@
 .header {
-  background-color: #282c34;
+  background-color: #1c1f26;
   padding: 20px;
-  text-align: center;
   border-bottom: 2px solid #61dafb;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.navContainer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.brand {
+  color: white;
+  font-size: 1.5rem;
+  text-decoration: none;
+  font-weight: bold;
 }
 
 nav ul {
@@ -10,37 +26,41 @@ nav ul {
   margin: 0;
   padding: 0;
   display: flex;
-  justify-content: center;
+  justify-content: flex-end;
   gap: 30px;
+  align-items: center;
 }
 
 nav li {
   margin: 0;
 }
 
-nav a {
+nav a,
+nav button {
   color: white;
-  font-size: 1.1rem;
+  font-size: 1.2rem;
   text-decoration: none;
-  transition: color 0.3s ease, text-decoration 0.3s ease;
+  transition: color 0.3s ease, text-decoration 0.3s ease, background-color 0.3s ease;
+  padding: 10px 15px;
+  border-radius: 4px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: inline-block;
 }
 
-nav a:hover {
+nav a:hover,
+nav button:hover {
   text-decoration: underline;
   color: #61dafb;
+  background-color: rgba(97, 218, 251, 0.1);
 }
 
 button {
-  background-color: #ff4d4d;
-  color: white;
-  border: none;
-  padding: 10px 20px;
-  font-size: 1rem;
-  cursor: pointer;
-  border-radius: 5px;
-  transition: background-color 0.3s ease;
+  background-color: transparent;
+  padding: 0;
 }
 
 button:hover {
-  background-color: #ff6666;
+  background-color: transparent;
 }

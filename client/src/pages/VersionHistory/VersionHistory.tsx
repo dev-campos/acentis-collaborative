@@ -56,38 +56,46 @@ const VersionHistory: React.FC = () => {
     };
 
     return (
-        <div className={styles.versionHistory}>
-            {loading && <div data-testid="loading">Loading versions...</div>}
-            {error && <div data-testid="error">{error}</div>}
-            {!loading && !error && (
-                <>
-                    <h3>Version History for Document: {id}</h3>
-                    <Link to={`/documents/${id}`} className={styles.backLink}>
-                        Back to Editor
-                    </Link>
-                    <ul className={styles.versionList}>
-                        {versions && versions.length > 0 ? (
-                            versions.map((version) => (
-                                <li key={version._id}>
-                                    <div>
-                                        <strong>Updated by</strong>{" "}
-                                        {version.updatedBy}
-                                    </div>
-                                    <ReadOnlyEditor content={version.content} />
-                                    <button
-                                        onClick={() =>
-                                            handleRollback(version._id)
-                                        }>
-                                        Rollback to this Version
-                                    </button>
-                                </li>
-                            ))
-                        ) : (
-                            <li>No versions available</li>
-                        )}
-                    </ul>
-                </>
-            )}
+        <div className={styles.pageBackground}>
+            <div className={styles.versionHistory}>
+                {loading && (
+                    <div data-testid="loading">Loading versions...</div>
+                )}
+                {error && <div data-testid="error">{error}</div>}
+                {!loading && !error && (
+                    <>
+                        <h3>Version History for Document: {id}</h3>
+                        <Link
+                            to={`/documents/${id}`}
+                            className={styles.backLink}>
+                            Back to Editor
+                        </Link>
+                        <ul className={styles.versionList}>
+                            {versions && versions.length > 0 ? (
+                                versions.map((version) => (
+                                    <li key={version._id}>
+                                        <div>
+                                            <strong>Updated by</strong>{" "}
+                                            {version.updatedBy}
+                                        </div>
+                                        <ReadOnlyEditor
+                                            content={version.content}
+                                        />
+                                        <button
+                                            onClick={() =>
+                                                handleRollback(version._id)
+                                            }>
+                                            Rollback to this Version
+                                        </button>
+                                    </li>
+                                ))
+                            ) : (
+                                <li>No versions available</li>
+                            )}
+                        </ul>
+                    </>
+                )}
+            </div>
         </div>
     );
 };

@@ -1,26 +1,25 @@
-/* Editor container */
 .editor {
-  margin: 20px auto;
-  background-color: antiquewhite;
-  width: 21cm;
-  height: 29.7cm;
+  margin: 40px auto;
+  background-color: #ffffff;
+  width: 100%;
+  max-width: 900px;
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  padding: 1rem;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  padding: 2rem;
+  border-radius: 8px;
   box-sizing: border-box;
 }
 
-/* ProseMirror paragraph styling */
-.editor .tiptap.ProseMirror p {
+.editor .tiptap.ProseMirror {
   overflow-y: auto;
   width: 100%;
   height: 100%;
-  box-sizing: border-box;
   padding: 1rem;
+  box-sizing: border-box;
 }
 
-/* Collaboration cursor styling */
 .editor .collaboration-cursor__caret {
   position: relative;
   border-left: 2px solid transparent;
@@ -34,78 +33,64 @@
   width: 2px;
   height: 100%;
   background-color: inherit;
-  /* Matches border-color */
 }
 
 .editor .collaboration-cursor__label {
   position: absolute;
   top: -1.5rem;
-  /* Positioning the label above the caret */
   left: 50%;
   transform: translateX(-50%);
-  /* Centering the label */
-  background-color: inherit;
-  /* Will match the dynamic color */
+  background-color: #61dafb;
   color: white;
   padding: 0.2rem 0.5rem;
   border-radius: 1rem;
-  /* Makes the pill shape */
   font-size: 0.8rem;
   white-space: nowrap;
   box-shadow: 0 0 4px rgba(0, 0, 0, 0.2);
 }
 
-/* List styles */
 .editor .content ul,
 .editor .content ol {
-  padding: 0 1rem;
-  margin: 1.25rem 1rem 1.25rem 0.4rem;
+  padding-left: 1.5rem;
+  margin: 1.25rem 0;
 }
 
 .editor .content ul li p,
 .editor .content ol li p {
-  margin-top: 0.25em;
-  margin-bottom: 0.25em;
+  margin: 0.5rem 0;
 }
 
-/* Heading styles */
 .editor .content h1,
 .editor .content h2,
 .editor .content h3,
 .editor .content h4,
 .editor .content h5,
 .editor .content h6 {
-  line-height: 1.1;
-  margin-top: 2.5rem;
-}
-
-.editor .content h1,
-.editor .content h2 {
-  margin-top: 3.5rem;
-  margin-bottom: 1.5rem;
+  line-height: 1.2;
+  margin: 2rem 0 1rem;
 }
 
 .editor .content h1 {
-  font-size: 1.4rem;
+  font-size: 2rem;
+  margin-top: 3rem;
 }
 
 .editor .content h2 {
-  font-size: 1.2rem;
+  font-size: 1.75rem;
 }
 
 .editor .content h3 {
-  font-size: 1.1rem;
+  font-size: 1.5rem;
 }
 
 .editor .content h4,
 .editor .content h5,
 .editor .content h6 {
-  font-size: 1rem;
+  font-size: 1.25rem;
 }
 
-/* Code and preformatted text styles */
 .editor .content code {
-  background-color: #e0bbff;
+  background-color: #f0f0f0;
   border-radius: 0.4rem;
   color: #000000;
   font-size: 0.85rem;
@@ -113,31 +98,30 @@
 }
 
 .editor .content pre {
-  background: #000000;
+  background: #1e1e1e;
   border-radius: 0.5rem;
   color: #ffffff;
-  font-family: 'JetBrainsMono', monospace;
+  font-family: 'JetBrains Mono', monospace;
   margin: 1.5rem 0;
-  padding: 0.75rem 1rem;
+  padding: 1rem;
 }
 
 .editor .content pre code {
   background: none;
   color: inherit;
-  font-size: 0.8rem;
-  padding: 0;
+  font-size: 0.85rem;
 }
 
-/* Blockquote styles */
 .editor .content blockquote {
-  border-left: 3px solid #cccccc;
+  border-left: 4px solid #ccc;
   margin: 1.5rem 0;
   padding-left: 1rem;
+  color: #555;
+  font-style: italic;
 }
 
-/* Horizontal rule styles */
 .editor .content hr {
   border: none;
-  border-top: 1px solid #999999;
+  border-top: 1px solid #ccc;
   margin: 2rem 0;
 }
