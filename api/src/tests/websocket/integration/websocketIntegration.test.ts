@@ -36,6 +36,12 @@ describe('Hocuspocus WebSocket Server', () => {
         await mongoose.connect(MONGODB_URI);
         httpServer = createServer();
 
+        const collections = mongoose.connection.collections;
+        for (const key in collections) {
+            const collection = collections[key];
+            await collection.deleteMany({});
+        }
+
         const { hocuspocusServer: createdHocuspocusServer, close } = createHocuspocusServer();
         hocuspocusServer = createdHocuspocusServer;
         closeHocuspocusServer = close;

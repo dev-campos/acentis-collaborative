@@ -17,6 +17,13 @@ describe('Document Integration Tests with Cloud MongoDB', () => {
             await mongoose.connect(mongoUri);
         }
 
+
+        const collections = mongoose.connection.collections;
+        for (const key in collections) {
+            const collection = collections[key];
+            await collection.deleteMany({});
+        }
+
         const hashedPassword = await bcrypt.hash('password123', 10);
         const user = await new User({
             email: 'testuser@example.com',

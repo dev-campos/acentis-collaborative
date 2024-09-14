@@ -11,6 +11,13 @@ describe('User Authentication Integration Tests', () => {
         if (mongoose.connection.readyState === 0) {
             await mongoose.connect(mongoUri);
         }
+
+
+        const collections = mongoose.connection.collections;
+        for (const key in collections) {
+            const collection = collections[key];
+            await collection.deleteMany({});
+        }
     }, 30000);
 
     afterAll(async () => {
