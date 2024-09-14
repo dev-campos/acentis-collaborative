@@ -1,31 +1,29 @@
-# Client Documentation
+# API Documentation
 
 ## Overview
 
-This is the frontend of the project, providing a user interface for document collaboration. It uses React, TypeScript, and Vite to offer a responsive, real-time collaborative editing experience.
+This is the backend of the project, responsible for managing the database, authentication, real-time collaboration using WebSocket, and document versioning.
 
 ## Features
 
--   User authentication and authorization using JWT.
+-   JWT-based authentication.
 
--   Real-time collaborative document editing.
+-   Document management: create, update, delete, and version control.
 
--   Document versioning and rollback capabilities.
+-   WebSocket integration using Hocuspocus and Yjs for real-time collaboration.
 
 ## Prerequisites
 
 -   Node.js
 
--   Vite
+-   MongoDB
 
 ## Installation
 
 1.  **Install dependencies**:
 
 ```bash
-
-yarn  install
-
+yarn install
 ```
 
 2.  **Set up environment variables**:
@@ -33,50 +31,46 @@ yarn  install
 Create a `.env` file using the template `.env.example`:
 
 ```bash
-
-VITE_API_URL=http://localhost:5001
-
+PORT=5001
+MONGODB_URI=<Your  MongoDB  URI>
+JWT_SECRET=<Your  JWT  secret>
 ```
 
-3.  **Run the development server**:
+3.  **Run the server**:
 
 ```bash
-
-yarn  dev
-
-```
-
-## Building for Production
-
-To build the project for production:
-
-```bash
-
-yarn  build
-
+yarn start
 ```
 
 ## Testing
 
-To run tests using Vitest:
+To run the tests:
 
 ```bash
-
 yarn  test
-
 ```
 
-## Folder Structure
+## API Endpoints
 
--   `src`: Contains all the source code.
+-   **Authentication**
 
--   `pages`: Different pages of the application (e.g., login, document list, etc.).
+-   `POST /api/auth/register`: Register a new user.
 
--   `components`: Reusable UI components.
+-   `POST /api/auth/login`: Log in a user and return a JWT token.
 
--   `hooks`: Custom React hooks.
+-   **Documents**
 
--   `api`: Functions for interacting with the API.
+-   `GET /api/documents`: Get a list of documents.
+
+-   `POST /api/documents`: Create a new document.
+
+-   `PUT /api/documents/:id`: Update a document.
+
+-   `DELETE /api/documents/:id`: Delete a document (only by creator).
+
+-   **WebSocket for Collaboration**
+
+-   The WebSocket server runs on `ws://localhost:5001` and handles real-time document collaboration using Yjs.
 
 MIT License
 
